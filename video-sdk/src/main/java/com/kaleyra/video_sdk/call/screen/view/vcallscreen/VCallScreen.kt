@@ -103,6 +103,7 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal val PanelTestTag = "PanelTestTag"
@@ -401,7 +402,7 @@ internal fun VCallScreen(
                         }
 
                         is SignatureMessage.New -> {
-                            if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed  }.size == 1) {
+                            if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed }.size == 1) {
                                 signDocumentsViewModel.signDocument(signDocumentsViewModel.uiState.value.signDocuments.value.first { it.id == message.signId })
                                 onSideBarSheetComponentRequest(ModularComponent.SignDocumentView)
                             } else {

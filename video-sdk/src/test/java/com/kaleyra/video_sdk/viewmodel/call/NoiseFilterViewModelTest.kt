@@ -87,20 +87,6 @@ class NoiseFilterViewModelTest {
     }
 
     @Test
-    fun noiseSuppressionModeUpdated_uiStateUpdated() = runTest {
-        viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }
-        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.None)
-        advanceUntilIdle()
-        Assert.assertEquals(NoiseFilterModeUi.None, viewModel.uiState.first().currentNoiseFilterModeUi)
-        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.Standard)
-        advanceUntilIdle()
-        Assert.assertEquals(NoiseFilterModeUi.Standard, viewModel.uiState.first().currentNoiseFilterModeUi)
-        viewModel.setNoiseSuppressionMode(NoiseFilterModeUi.DeepFilterAi)
-        advanceUntilIdle()
-        Assert.assertEquals(NoiseFilterModeUi.DeepFilterAi, viewModel.uiState.first().currentNoiseFilterModeUi)
-    }
-
-    @Test
     fun deepFilterNetModuleNotAvailable_uiStateUpdated() = runTest {
         every { DeepFilterNetModule.isAvailable() } returns false
         viewModel = NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }

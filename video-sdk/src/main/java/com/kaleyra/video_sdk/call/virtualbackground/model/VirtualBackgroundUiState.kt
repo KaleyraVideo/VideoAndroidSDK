@@ -32,12 +32,6 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
  */
 @Immutable
 data class VirtualBackgroundUiState(
-    /**
-     * Indicates whether virtual backgrounds are supported by the current device
-     * or environment.
-     * Defaults to `false`.
-     */
-    val areVirtualBackgroundSupported: Boolean = false,
 
     /**
      * The currently selected or active virtual background.

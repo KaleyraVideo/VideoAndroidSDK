@@ -51,7 +51,7 @@ class VirtualBackgroundSettingsComponentTest {
     fun testNoVirtualBackground_cameraSettingsNotDisplayed() = runTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(
-                VirtualBackgroundUiState(areVirtualBackgroundSupported = false),
+                VirtualBackgroundUiState(),
                 { requestedVirtualBackgroundUi = it })
         }
 
@@ -62,7 +62,7 @@ class VirtualBackgroundSettingsComponentTest {
     fun testOnlyNoneVirtualBackground_cameraSettingsNotDisplayed() = runTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(
-                VirtualBackgroundUiState(areVirtualBackgroundSupported = true, backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None))),
+                VirtualBackgroundUiState(backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None))),
                 { requestedVirtualBackgroundUi = it }
             )
         }
@@ -75,7 +75,6 @@ class VirtualBackgroundSettingsComponentTest {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(
                 VirtualBackgroundUiState(
-                    areVirtualBackgroundSupported = true,
                     backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("blur"), VirtualBackgroundUi.Blur("blur")))),
                 { requestedVirtualBackgroundUi = it }
             )
@@ -92,7 +91,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testNoneVirtualBackgroundClicked_noneCameraEffectsSet() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
                 { requestedVirtualBackgroundUi = it }
             )
@@ -107,7 +105,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testBlurVirtualBackgroundClicked_blurCameraEffectsSet() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
                 { requestedVirtualBackgroundUi = it }
             )
@@ -121,7 +118,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testImageVirtualBackgroundClicked_imageCameraEffectsSet() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur")))),
                 { requestedVirtualBackgroundUi = it }
             )
@@ -135,7 +131,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testVirtualBackgroundBlurOptionSelected() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
                 currentBackground = VirtualBackgroundUi.Blur("blur")),
                 { requestedVirtualBackgroundUi = it }
@@ -149,7 +144,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testVirtualBackgroundImageOptionSelected() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
                 currentBackground = VirtualBackgroundUi.Image("image")),
                 { requestedVirtualBackgroundUi = it }
@@ -163,7 +157,6 @@ class VirtualBackgroundSettingsComponentTest {
     fun testVirtualBackgroundNoneOptionSelected() {
         composeTestRule.setContent {
             VirtualBackgroundSettingsComponent(VirtualBackgroundUiState(
-                areVirtualBackgroundSupported = true,
                 backgroundList = ImmutableList(listOf(VirtualBackgroundUi.None, VirtualBackgroundUi.Image("image"), VirtualBackgroundUi.Blur("blur"))),
                 currentBackground = VirtualBackgroundUi.None),
                 { requestedVirtualBackgroundUi = it }

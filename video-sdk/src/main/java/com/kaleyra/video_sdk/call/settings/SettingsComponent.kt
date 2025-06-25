@@ -84,7 +84,7 @@ internal fun SettingsComponent(
                 onChangeAudioOutputRequested,
                 horizontalPaddingModifier
             )
-            if (noiseFilterUiState.value.supportedNoiseFilterModesUi.value.any { it !is NoiseFilterModeUi.None }) {
+            if (noiseFilterUiState.value.supportedNoiseFilterModesUi.value.any { it is NoiseFilterModeUi.DeepFilterAi }) {
                 Spacer(modifier = Modifier.size(SettingsComponentVerticalSpacer))
                 NoiseSuppressionSettingsComponent(
                     noiseFilterUiState.value,

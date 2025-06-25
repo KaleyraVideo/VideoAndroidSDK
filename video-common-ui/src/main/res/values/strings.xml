@@ -95,7 +95,6 @@
     <string name="kaleyra_strings_info_noise_suppression">Noise Suppression</string>
     <string name="kaleyra_strings_action_noise_suppression_deepfilter_ai">DeepFilter AI</string>
     <string name="kaleyra_strings_action_noise_suppression_standard">Standard</string>
-    <string name="kaleyra_strings_action_noise_suppression_none">None</string>
     <string name="kaleyra_strings_info_camera_settings">Camera Effects</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Model loading in progress…</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Model not available</string>

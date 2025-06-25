@@ -28,7 +28,6 @@ private val NoiseSuppressionSettingsGroupVerticalPadding = 8.dp
 
 internal const val NoiseSuppressionDeepFilterOptionTag = "NoiseSuppressionDeepFilterOptionTag"
 internal const val NoiseSuppressionStandardOptionTag = "NoiseSuppressionStandardOptionTag"
-internal const val NoiseSuppressionNoneOptionTag = "NoiseSuppressionNoneOptionTag"
 internal const val VoiceSettingsTag = "VoiceSettingsTag"
 internal const val NoiseSuppressionSettingsTag = "NoiseSuppressionSettingsTag"
 
@@ -81,19 +80,6 @@ internal fun NoiseSuppressionSettingsComponent(
                         isEnabled = true,
                         onCheckedChange = {
                             onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.Standard)
-                        }
-                    )
-                }
-                if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.None)) {
-                    SettingsItemComponent(
-                        iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_none),
-                        text = stringResource(R.string.kaleyra_strings_action_noise_suppression_none),
-                        testTag = NoiseSuppressionNoneOptionTag,
-                        isToggleable = false,
-                        isSelected = noiseFilterUiState.currentNoiseFilterModeUi is NoiseFilterModeUi.None,
-                        isEnabled = true,
-                        onCheckedChange = {
-                            onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.None)
                         }
                     )
                 }

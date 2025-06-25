@@ -93,7 +93,6 @@
     <string name="kaleyra_strings_info_noise_suppression">Soppressione del rumore</string>
     <string name="kaleyra_strings_action_noise_suppression_deepfilter_ai">DeepFilter AI</string>
     <string name="kaleyra_strings_action_noise_suppression_standard">Standard</string>
-    <string name="kaleyra_strings_action_noise_suppression_none">Nessuna</string>
     <string name="kaleyra_strings_info_camera_settings">Effetti fotocamera</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Caricamento del modello in corso…</string>
     <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Modello non disponibile</string>

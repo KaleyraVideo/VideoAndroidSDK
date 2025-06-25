@@ -7,7 +7,6 @@ import com.kaleyra.video_sdk.call.settings.model.NoiseFilterModeUi
 object NoiseFilterMapper {
 
     internal fun getSupportedNoiseFilterModes(): List<NoiseFilterModeUi> = listOfNotNull(
-        NoiseFilterModeUi.None,
         NoiseFilterModeUi.Standard,
         NoiseFilterModeUi.DeepFilterAi.takeIf { DeepFilterNetModule.isAvailable() }
     )
@@ -15,12 +14,10 @@ object NoiseFilterMapper {
     internal fun NoiseFilterModeUi.toNoiseFilerMode(): Input.Audio.My.NoiseFilterMode = when (this) {
         NoiseFilterModeUi.DeepFilterAi -> Input.Audio.My.NoiseFilterMode.DeepFilterAi
         NoiseFilterModeUi.Standard -> Input.Audio.My.NoiseFilterMode.Standard
-        NoiseFilterModeUi.None -> Input.Audio.My.NoiseFilterMode.Disabled
     }
 
     internal fun Input.Audio.My.NoiseFilterMode.toNoiseFilerUiMode(): NoiseFilterModeUi = when (this) {
         Input.Audio.My.NoiseFilterMode.DeepFilterAi -> NoiseFilterModeUi.DeepFilterAi
         Input.Audio.My.NoiseFilterMode.Standard -> NoiseFilterModeUi.Standard
-        Input.Audio.My.NoiseFilterMode.Disabled -> NoiseFilterModeUi.None
     }
 }

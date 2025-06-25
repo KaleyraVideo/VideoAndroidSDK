@@ -57,8 +57,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_blurVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -71,8 +73,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusNone_blurVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -85,8 +89,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusLight_blurVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -99,8 +105,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusModerate_blurVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -113,8 +121,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusSevere_notDisabledBlurVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -127,8 +137,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusCritical_disabledBlurVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -141,8 +153,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusEmergency_disabledBlurVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -155,8 +169,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusShutdown_disabledBlurVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Blur("blur", factor = 0.5f))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -171,8 +187,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_ImageVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -185,8 +203,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusNone_ImageVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -199,8 +219,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusLight_ImageVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -213,8 +235,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusModerate_ImageVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -227,8 +251,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusSevere_notDisabledImageVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -241,8 +267,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusCritical_disabledImageVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -255,8 +283,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusEmergency_disabledImageVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -269,8 +299,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusShutdown_disabledImageVirtualBackground() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.Background.Image("image", mockk()))
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -285,8 +317,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -299,8 +333,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusNone_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -313,8 +349,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusLight_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -327,8 +365,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusModerate_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -341,8 +381,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusSevere_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -355,8 +397,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusCritical_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -369,8 +413,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusEmergency_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -383,8 +429,10 @@ class CallPerformanceManagerTest {
     fun throttlingStatusShutdown_noneVirtualBackgroundNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
@@ -399,6 +447,8 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -406,13 +456,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusNone_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -420,13 +472,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusLight_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -434,13 +488,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusModerate_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -448,13 +504,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusSevere_aiNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -469,6 +527,8 @@ class CallPerformanceManagerTest {
     fun throttlingStatusCritical_aiNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -483,6 +543,8 @@ class CallPerformanceManagerTest {
     fun throttlingStatusEmergency_aiNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -497,6 +559,8 @@ class CallPerformanceManagerTest {
     fun throttlingStatusShutdown_aiNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.DeepFilterAi)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -514,6 +578,8 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_standardNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -521,13 +587,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusNone_standardNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -535,13 +603,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusLight_standardNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -549,13 +619,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusModerate_standardNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -563,13 +635,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusSevere_standardNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -577,13 +651,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusCritical_standardNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -591,13 +667,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusEmergency_standardNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -605,13 +683,15 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusShutdown_standardNoiseFilterDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
         every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
@@ -619,7 +699,7 @@ class CallPerformanceManagerTest {
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     // disabled noise filter
@@ -630,111 +710,127 @@ class CallPerformanceManagerTest {
     fun throttlingStatusUnknown_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.UNKNOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusNone_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusLight_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.LIGHT)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusModerate_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusSevere_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusCritical_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusEmergency_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.EMERGENCY)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 
     @Test
     fun throttlingStatusShutdown_noNoiseFilterNotDisabled() = runTest {
         callMock.deviceThermalManager = mockk {
             every { throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SHUTDOWN)
+            every { startThermalMonitoring() } returns Unit
+            every { stopThermalMonitoring() } returns Unit
         }
-        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Disabled)
+        every { myAudio.noiseFilterMode } returns MutableStateFlow(Input.Audio.My.NoiseFilterMode.Standard)
         every { myVideo.currentEffect } returns MutableStateFlow(Effect.Video.None)
         CallPerformanceManager(backgroundScope).bind(callMock)
 
         runCurrent()
 
-        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Disabled) }
+        verify(exactly = 0) { myAudio.setNoiseFilterMode(Input.Audio.My.NoiseFilterMode.Standard) }
     }
 }

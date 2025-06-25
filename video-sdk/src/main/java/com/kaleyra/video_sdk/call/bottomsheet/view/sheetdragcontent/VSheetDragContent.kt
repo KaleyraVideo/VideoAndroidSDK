@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
@@ -30,6 +31,7 @@ import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
@@ -68,6 +70,9 @@ internal fun VSheetDragContent(
 
     var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
     screenShareMode = uiState.actionList.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
+
+    val virtualBackgroundViewModel = viewModel<VirtualBackgroundViewModel>(factory = VirtualBackgroundViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val virtualBackgroundUiState = virtualBackgroundViewModel.uiState.collectAsStateWithLifecycle()
 
     VSheetDragContent(
         modifier = modifier,
@@ -124,7 +129,11 @@ internal fun VSheetDragContent(
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
-        onSettingsClick = { onModularComponentRequest(ModularComponent.Settings) },
+        onSettingsClick = {
+            val displayFullscreenSettings = DeepFilterNetModule.isAvailable() && virtualBackgroundUiState.value.backgroundList.value.isNotEmpty()
+            if (displayFullscreenSettings) onModularComponentRequest(ModularComponent.Settings)
+            else onModularComponentRequest(ModularComponent.VoiceSettings)
+        },
         onChatClick = remember(viewModel) { { activity.unlockDevice(onUnlocked = { viewModel.showChat(activity) }) } },
         onFileShareClick = {
             onModularComponentRequest(ModularComponent.FileShare)

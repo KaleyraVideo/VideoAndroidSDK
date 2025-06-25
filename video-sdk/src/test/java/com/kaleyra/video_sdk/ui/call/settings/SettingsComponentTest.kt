@@ -75,7 +75,7 @@ class SettingsComponentTest {
     fun setUp() {
         ContextRetainer().create(composeTestRule.activity.applicationContext)
         mockkObject(NoiseFilterMapper)
-        every { NoiseFilterMapper.getSupportedNoiseFilterModes() } returns listOf(NoiseFilterModeUi.None, NoiseFilterModeUi.Standard, NoiseFilterModeUi.DeepFilterAi)
+        every { NoiseFilterMapper.getSupportedNoiseFilterModes() } returns listOf(NoiseFilterModeUi.Standard, NoiseFilterModeUi.DeepFilterAi)
         mockkObject(AudioOutputMapper)
         every { callMock.toCurrentAudioDeviceUi() } returns MutableStateFlow(AudioDeviceUi.LoudSpeaker)
         every { callMock.toAvailableAudioDevicesUi() } returns MutableStateFlow(listOf(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.EarPiece))
@@ -108,7 +108,7 @@ class SettingsComponentTest {
             )
 
         }
-        virtualBackgroundViewModel = spyk(VirtualBackgroundViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) })
+        virtualBackgroundViewModel = spyk(VirtualBackgroundViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, mockk()))
         noiseFilterViewModel = spyk(NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) })
         audioOutputViewModel = spyk(AudioOutputViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) })
 
@@ -188,30 +188,6 @@ class SettingsComponentTest {
         composeTestRule.onNodeWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_standard)).performClick()
 
         verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.Standard) }
-    }
-
-    @Test
-    fun testDisableNoiseFilterOptionTextCLicked_disableNoiseFilterModeSetOnViewModel() = runTest {
-        lateinit var scrollState: ScrollState
-        composeTestRule.setContent {
-            scrollState = rememberScrollState()
-            SettingsComponent(
-                audioOutputViewModel,
-                noiseFilterViewModel,
-                virtualBackgroundViewModel,
-                onDismiss = {},
-                onUserMessageActionClick = { },
-                onChangeAudioOutputRequested = { },
-                scrollState = scrollState,
-                modifier = Modifier,
-                isLargeScreen = false,
-            )
-        }
-        scrollState.scrollTo(400)
-
-        composeTestRule.onAllNodesWithText(composeTestRule.activity.getString(R.string.kaleyra_strings_action_noise_suppression_none)).onFirst().performClick()
-
-        verify { noiseFilterViewModel.setNoiseSuppressionMode(NoiseFilterModeUi.None) }
     }
 
     @Test

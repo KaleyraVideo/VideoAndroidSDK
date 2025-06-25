@@ -17,9 +17,4 @@ sealed class NoiseFilterModeUi {
      * This mode usually provides a balance between noise reduction and resource usage.
      */
     data object Standard : NoiseFilterModeUi()
-
-    /**
-     * Represents the state where no noise suppression is active.
-     */
-    data object None : NoiseFilterModeUi()
 }
