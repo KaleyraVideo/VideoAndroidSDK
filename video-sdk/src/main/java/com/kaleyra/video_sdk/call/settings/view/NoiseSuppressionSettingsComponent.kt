@@ -1,11 +1,11 @@
 package com.kaleyra.video_sdk.call.settings.view
 
-
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +31,6 @@ internal const val NoiseSuppressionStandardOptionTag = "NoiseSuppressionStandard
 internal const val VoiceSettingsTag = "VoiceSettingsTag"
 internal const val NoiseSuppressionSettingsTag = "NoiseSuppressionSettingsTag"
 
-
 @Composable
 internal fun NoiseSuppressionSettingsComponent(
     noiseFilterUiState: NoiseFilterUiState,
@@ -41,23 +40,20 @@ internal fun NoiseSuppressionSettingsComponent(
 
     Column(modifier = Modifier
         .testTag(NoiseSuppressionSettingsTag)
-        .then(modifier!!)) {
+        .then(modifier)) {
         Text(
             modifier = Modifier.padding(bottom = NoiseSuppressionSettingsGroupTitleBottomPadding),
             text = stringResource(R.string.kaleyra_strings_info_noise_suppression),
             style = MaterialTheme.typography.bodyLarge)
-        Box(modifier = Modifier
-            .border(
-                width = NoiseSuppressionSettingsGroupBorderWidth,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                shape = RoundedCornerShape(NoiseSuppressionSettingsGroupRoundCorner)
-            )
+        Card(
+            border = BorderStroke(NoiseSuppressionSettingsGroupBorderWidth, MaterialTheme.colorScheme.outlineVariant),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLowest, MaterialTheme.colorScheme.onSurface),
+            shape = RoundedCornerShape(NoiseSuppressionSettingsGroupRoundCorner)
         ) {
-            Column(
-                modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding, bottom = NoiseSuppressionSettingsGroupVerticalPadding)
-            ) {
+            Column {
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.DeepFilterAi)) {
                     SettingsItemComponent(
+                        modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding, bottom = NoiseSuppressionSettingsGroupVerticalPadding / 2),
                         iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_ai),
                         text = stringResource(R.string.kaleyra_strings_action_noise_suppression_deepfilter_ai),
                         testTag = NoiseSuppressionDeepFilterOptionTag,
@@ -67,11 +63,13 @@ internal fun NoiseSuppressionSettingsComponent(
                         isEnabled = !noiseFilterUiState.isDeviceOverHeating,
                         onCheckedChange = {
                             onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.DeepFilterAi)
-                        }
+                        },
+                        highlightFocusShape = RoundedCornerShape(topStart = NoiseSuppressionSettingsGroupRoundCorner, topEnd = NoiseSuppressionSettingsGroupRoundCorner)
                     )
                 }
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.Standard)) {
                     SettingsItemComponent(
+                        modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding / 2, bottom = NoiseSuppressionSettingsGroupVerticalPadding),
                         iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_standard),
                         text = stringResource(R.string.kaleyra_strings_action_noise_suppression_standard),
                         testTag = NoiseSuppressionStandardOptionTag,
@@ -80,7 +78,8 @@ internal fun NoiseSuppressionSettingsComponent(
                         isEnabled = true,
                         onCheckedChange = {
                             onNoiseSuppressionModeRequested.invoke(NoiseFilterModeUi.Standard)
-                        }
+                        },
+                        highlightFocusShape = RoundedCornerShape(bottomStart = NoiseSuppressionSettingsGroupRoundCorner, bottomEnd = NoiseSuppressionSettingsGroupRoundCorner)
                     )
                 }
             }
