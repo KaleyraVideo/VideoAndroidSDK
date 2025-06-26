@@ -165,4 +165,10 @@ class CallUITest {
         Assert.assertEquals(1, callUI.buttons.value.size)
         Assert.assertEquals(CallUI.Button.HangUp, callUI.buttons.value.first())
     }
+
+    @Test
+    fun testCallUIButtonsCollectionsDefaultComparatorSorting() {
+        val sortedCallUIButtonsSet = CallUI.Button.all.shuffled().toSet().toSortedSet(CallUI.Button.Collections.Comparators.Default)
+        Assert.assertEquals(sortedCallUIButtonsSet, CallUI.Button.all)
+    }
 }

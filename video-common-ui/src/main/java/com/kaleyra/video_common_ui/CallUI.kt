@@ -214,8 +214,27 @@ class CallUI(
          */
         companion object Collections {
 
-            data object PredefinedOrderButtonComparator: Comparator<CallUI.Button> {
-                override fun compare(button1: Button?, button2: Button?) = all.indexOf(button1) - all.indexOf(button2)
+            /**
+             * Defines a collection of [Comparator] implementations for sorting [CallUI.Button] elements.
+             * This sealed class allows for a restricted set of known comparators to be used within the system.
+             */
+            sealed class Comparators {
+
+                /**
+                 * A default comparator for [CallUI.Button]s.
+                 *
+                 * This comparator sorts buttons based on a predefined order specified by the `all` list.
+                 * Buttons appearing earlier in the `all` list will be considered "less than" buttons
+                 * appearing later in the list. If a button is not found in the `all` list, its behavior
+                 * in the comparison will be based on `indexOf` returning -1, potentially leading to
+                 * it being sorted towards the beginning or end depending on the other button's position.
+                 *
+                 * It's crucial that the `all` list contains all relevant [CallUI.Button] instances
+                 * that are expected to be sorted by this comparator for predictable behavior.
+                 */
+                data object Default: Comparator<CallUI.Button>, Comparators() {
+                    override fun compare(button1: Button?, button2: Button?) = all.indexOf(button1) - all.indexOf(button2)
+                }
             }
 
             /**

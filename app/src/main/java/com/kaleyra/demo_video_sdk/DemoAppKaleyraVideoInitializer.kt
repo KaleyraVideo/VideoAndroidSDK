@@ -81,11 +81,8 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val callConfiguration = getCallConfiguration()
 
                 ongoingCall.buttonsProvider = { callButtons ->
-
                     (callButtons + getCallConfiguration().actions.mapToCallUIButtons())
-                        .toSortedSet(
-                            CallUI.Button.Collections.PredefinedOrderButtonComparator
-                        )
+                        .toSortedSet(CallUI.Button.Collections.Comparators.Default)
                 }
 
                 ongoingCall.state
