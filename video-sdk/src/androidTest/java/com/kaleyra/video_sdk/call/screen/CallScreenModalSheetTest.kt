@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.kaleyra.video_sdk.call.screen
 
 import androidx.activity.ComponentActivity
@@ -23,6 +25,8 @@ import com.kaleyra.video_sdk.call.screen.view.CallScreenModalSheet
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.model.ScreenShareUiState
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.settings.model.NoiseFilterUiState
+import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
 import com.kaleyra.video_sdk.call.stream.model.StreamUiState
 import com.kaleyra.video_sdk.call.stream.viewmodel.StreamViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
@@ -38,6 +42,7 @@ import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.After
@@ -62,6 +67,7 @@ class CallScreenModalSheetTest {
         mockkObject(ParticipantsViewModel)
         mockkObject(StreamViewModel)
         mockkObject(UserMessagesViewModel)
+        mockkObject(NoiseFilterViewModel)
 
         every { AudioOutputViewModel.provideFactory(any()) } returns mockk {
             every { create(any<KClass<AudioOutputViewModel>>(), any()) } returns mockk<AudioOutputViewModel>(relaxed = true) {
@@ -102,6 +108,11 @@ class CallScreenModalSheetTest {
             every { create(any<KClass<UserMessagesViewModel>>(), any()) } returns mockk<UserMessagesViewModel>(relaxed = true) {
                 every { uiState } returns MutableStateFlow(StackedSnackbarUiState())
                 every { userMessage } returns flowOf(ImmutableList(listOf(PinScreenshareMessage("streamId", "username"))))
+            }
+        }
+        every { NoiseFilterViewModel.provideFactory(any()) } returns mockk {
+            every { create(any<KClass<NoiseFilterViewModel>>(), any()) } returns mockk<NoiseFilterViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(NoiseFilterUiState())
             }
         }
     }
@@ -586,5 +597,135 @@ class CallScreenModalSheetTest {
         }
 
         composeTestRule.onNodeWithContentDescription(drag).assertDoesNotExist()
+    }
+
+    @Test
+    fun settingsSheetComponent_settingsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.Settings,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = {},
+                onAskInputPermissions = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
+                onComponentDisplayed = { componentDisplayed = it }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        assertEquals(componentDisplayed, ModularComponent.Settings)
+    }
+
+    @Test
+    fun settingsSheetComponent_dragHandleNotExists() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.Settings,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = {},
+                onAskInputPermissions = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
+                onComponentDisplayed = { componentDisplayed = it }
+            )
+        }
+
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.onNodeWithContentDescription(drag).assertDoesNotExist()
+    }
+
+    @Test
+    fun settingsComponentDisplayed_settingsComponentDismissesSheet() {
+        var dismissed = false
+        var sheetState: SheetState? = null
+        composeTestRule.setContent {
+            sheetState = rememberModalBottomSheetState()
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.Settings,
+                sheetState = sheetState!!,
+                onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
+            )
+        }
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithContentDescription(closeText)
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(true, dismissed)
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
+    }
+
+    @Test
+    fun voiceSettingsSheetComponent_voiceSettingsComponentIsDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.Settings,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = {},
+                onAskInputPermissions = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
+                onComponentDisplayed = { componentDisplayed = it }
+            )
+        }
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+        assertEquals(componentDisplayed, ModularComponent.Settings)
+    }
+
+    @Test
+    fun voiceSettingsSheetComponent_dragHandleDisplayed() {
+        var componentDisplayed: ModularComponent? = null
+        composeTestRule.setContent {
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.VoiceSettings,
+                sheetState = rememberModalBottomSheetState(),
+                onRequestDismiss = {},
+                onAskInputPermissions = {},
+                onUserMessageActionClick = { },
+                onRequestOtherModularComponent = { },
+                onComponentDisplayed = { componentDisplayed = it }
+            )
+        }
+
+        val drag = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_drag_description)
+        composeTestRule.onNodeWithContentDescription(drag).assertIsDisplayed()
+    }
+
+    @Test
+    fun voiceSettingsComponentDisplayed_voiceSettingsComponentDismissesSheet() {
+        var dismissed = false
+        var sheetState: SheetState? = null
+        composeTestRule.setContent {
+            sheetState = rememberModalBottomSheetState()
+            CallScreenModalSheet(
+                modularComponent = ModularComponent.VoiceSettings,
+                sheetState = sheetState!!,
+                onRequestDismiss = { dismissed = true },
+                onAskInputPermissions = {},
+                onUserMessageActionClick = {},
+                onRequestOtherModularComponent = {}
+            )
+        }
+        val componentTitle = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        val closeText = composeTestRule.activity.getString(R.string.kaleyra_close)
+        composeTestRule.onNodeWithText(componentTitle).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithContentDescription(closeText)
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitForIdle()
+        assertEquals(true, dismissed)
+        assertEquals(SheetValue.Hidden, sheetState!!.currentValue)
     }
 }
