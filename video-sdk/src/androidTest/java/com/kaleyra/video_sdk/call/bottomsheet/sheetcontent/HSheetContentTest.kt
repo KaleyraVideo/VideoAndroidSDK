@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
+import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
@@ -29,6 +30,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.sheetcontent.HSheetContent
@@ -44,6 +46,9 @@ import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
+import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUiState
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.immutablecollections.toImmutableList
 import io.mockk.every
@@ -56,6 +61,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import kotlin.reflect.KClass
 
 @OptIn(ExperimentalPermissionsApi::class)
 class HSheetContentTest {
@@ -614,10 +620,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { },
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_more_actions)
@@ -652,10 +658,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_description_hide_actions)
@@ -690,10 +696,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText("8").assertIsDisplayed()
@@ -726,10 +732,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { },
+                onSettingsClick = { },
             )
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
@@ -763,10 +769,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         val text = composeTestRule.activity.getString(R.string.kaleyra_call_badge_count_overflow)
@@ -794,10 +800,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -824,10 +830,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertDoesNotExist()
@@ -854,10 +860,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(hangUpDescription).assertHasClickAction()
@@ -886,10 +892,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(micDescription).assertHasClickAction()
@@ -918,10 +924,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(cameraDescription).assertHasClickAction()
@@ -950,10 +956,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(screenShareDescription).assertHasClickAction()
@@ -982,10 +988,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(flipDescription).assertHasClickAction()
@@ -1014,10 +1020,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(audioDescription).assertHasClickAction()
@@ -1046,10 +1052,10 @@ class HSheetContentTest {
                 onChatClick = { isChatClicked = true },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(chatDescription).assertHasClickAction()
@@ -1078,10 +1084,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { isFileShareClicked = true },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(fileShareDescription).assertHasClickAction()
@@ -1111,9 +1117,9 @@ class HSheetContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { isWhiteboardClicked = true },
                 onVirtualBackgroundToggle = { },
+                onSignatureClick = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(whiteboardDescription).assertHasClickAction()
@@ -1142,10 +1148,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { isVirtualClicked = true },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(virtualDescription).assertHasClickAction()
@@ -1175,10 +1181,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertHasClickAction()
@@ -1215,10 +1221,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
-                onVirtualBackgroundToggle = { },
-                onSettingsClick = {},
                 onSignatureClick = { },
-                onMoreToggle = { isMoreClicked = true }
+                onVirtualBackgroundToggle = { },
+                onMoreToggle = { isMoreClicked = true },
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1256,10 +1262,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertIsDisplayed()
@@ -1292,10 +1298,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(moreDescription).assertDoesNotExist()
@@ -1332,10 +1338,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithText(answerDescription).assertIsDisplayed()
@@ -1372,10 +1378,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         val childBounds1 = composeTestRule.onNodeWithContentDescription(flip).getBoundsInRoot()
@@ -1413,10 +1419,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1457,10 +1463,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1506,10 +1512,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1553,10 +1559,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1601,10 +1607,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1637,10 +1643,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1668,10 +1674,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1700,10 +1706,10 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
@@ -1732,15 +1738,83 @@ class HSheetContentTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { },
+                onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
                 onMoreToggle = { },
-                onSettingsClick = {},
-                onSignatureClick = { }
+                onSettingsClick = { }
             )
         }
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithContentDescription(hangUpDescription).assertWidthIsEqualTo(
             HangUpActionExtendedWidth
         )
+    }
+
+    @Test
+    fun userClickSettings_settingsModularComponentRequested() {
+        mockkObject(DeepFilterNetModule)
+        every { DeepFilterNetModule.isAvailable() } returns true
+        mockkObject(VirtualBackgroundViewModel)
+        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
+            every { create(any<KClass<VirtualBackgroundViewModel>>(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(VirtualBackgroundUiState(backgroundList = ImmutableList(listOf(VirtualBackgroundUi.Blur(id = "blur")))))
+            }
+        }
+        var modularComponentRequested: ModularComponent? = null
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(SettingsAction()).toImmutableList())
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isMoreToggled = false,
+                isLargeScreen = false,
+                inputPermissions = InputPermissions(),
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { modularComponentRequested = it },
+                onAskInputPermissions = {},
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModularComponent.Settings, modularComponentRequested)
+    }
+
+    @Test
+    fun userClickSettings_voiceSettingsModularComponentRequested() {
+        mockkObject(DeepFilterNetModule)
+        every { DeepFilterNetModule.isAvailable() } returns true
+        mockkObject(VirtualBackgroundViewModel)
+        every { VirtualBackgroundViewModel.provideFactory(any()) } returns mockk {
+            every { create(any<KClass<VirtualBackgroundViewModel>>(), any()) } returns mockk<VirtualBackgroundViewModel>(relaxed = true) {
+                every { uiState } returns MutableStateFlow(VirtualBackgroundUiState(backgroundList = ImmutableList(listOf(VirtualBackgroundUi.Blur(id = "blur")))))
+            }
+        }
+        var modularComponentRequested: ModularComponent? = null
+        callActionsUiState.value = CallActionsUiState(actionList = listOf(SettingsAction()).toImmutableList())
+        composeTestRule.setContent {
+            HSheetContent(
+                viewModel = callActionsViewModel,
+                isMoreToggled = false,
+                isLargeScreen = false,
+                inputPermissions = InputPermissions(),
+                onMoreToggle = {},
+                onActionsOverflow = {},
+                onModularComponentRequest = { modularComponentRequested = it },
+                onAskInputPermissions = {},
+            )
+        }
+
+        val text = composeTestRule.activity.getString(R.string.kaleyra_strings_action_settings)
+        composeTestRule
+            .onNodeWithContentDescription(text, useUnmergedTree = true)
+            .assertIsDisplayed()
+            .performClick()
+
+        assertEquals(ModularComponent.Settings, modularComponentRequested)
     }
 }
