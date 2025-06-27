@@ -1,15 +1,19 @@
 package com.kaleyra.video_sdk.viewmodel.call
 
+import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.CollaborationViewModel.Configuration
 import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.KaleyraVideo
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.common.usermessages.model.AlertMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import com.kaleyra.video_sdk.common.usermessages.viewmodel.UserMessagesViewModel
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -49,11 +53,32 @@ class UserMessagesViewModelTest {
     @Before
     fun setUp() {
         mockkObject(KaleyraVideo)
+        with (callMock) {
+            every { type } returns MutableStateFlow(Call.Type.audioVideo())
+            every { participants } returns MutableStateFlow(mockk {
+                every { me } returns mockk(relaxed = true) {
+                    every { streams } returns MutableStateFlow(listOf(
+                        mockk {
+                            every { id } returns com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
+                            every { audio } returns mockk(relaxed = true)
+                            every { video } returns mockk(relaxed = true)
+                            every { state } returns MutableStateFlow(Stream.State.Live)
+                        }
+                    ))
+                    every { userId } returns "me"
+                }
+                every { others } returns listOf(mockk(relaxed = true) { every { userId } returns "other" })
+            })
+        }
         every { KaleyraVideo.conference } returns mockk(relaxed = true)
         mockkObject(CallUserMessagesProvider)
         every { conferenceMock.call } returns MutableStateFlow(callMock)
         every { CallUserMessagesProvider.userMessage } returns userMessages
         every { CallUserMessagesProvider.alertMessages } returns alertMessages
+        mockkObject(CallExtensions)
+        with(CallExtensions) {
+            coEvery { callMock.isCpuThrottling(any()) } returns MutableStateFlow(false)
+        }
         viewModel = spyk(UserMessagesViewModel(
             accessibilityManager = null,
             configure = { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }

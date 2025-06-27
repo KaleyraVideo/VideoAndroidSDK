@@ -62,7 +62,7 @@ internal fun AudioOutputContent(
                     )
                     .highlightOnFocus(interactionSource)
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp,  vertical = 12.dp)
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
             )
         }
     }

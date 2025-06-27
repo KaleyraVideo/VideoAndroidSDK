@@ -84,6 +84,8 @@ dependencies {
     testImplementation "androidx.compose.ui:ui-test-junit4"
     testImplementation "androidx.compose.ui:ui-tooling"
     testImplementation "androidx.compose.ui:ui-test-manifest"
+    testImplementation kaleyraCatalog.kaleyraVideo
+    testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
     androidTestImplementation catalog.androidxTestRunner
     androidTestImplementation catalog.androidxTestEspressoCore
@@ -93,6 +95,8 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4"
     androidTestImplementation "androidx.compose.ui:ui-tooling"
     androidTestImplementation "androidx.compose.ui:ui-test-manifest"
+    androidTestImplementation kaleyraCatalog.kaleyraVideo
+    androidTestImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
     /** Kaleyra **/
     api kaleyraCatalog.kaleyraVideo

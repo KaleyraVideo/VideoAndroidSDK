@@ -18,6 +18,7 @@ import com.kaleyra.video_sdk.common.usermessages.model.MutedMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.RecordingMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UsbCameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.model.WhiteboardRequestMessage
@@ -54,21 +55,20 @@ internal fun StackedSnackbar(
                 })
                 is WhiteboardRequestMessage.WhiteboardHideRequestMessage -> WhiteboardAdminCloseSnackbar(userMessage.username, onDismissClick = dismiss)
                 is WhiteboardRequestMessage.WhiteboardShowRequestMessage -> WhiteboardAdminOpenSnackbar(userMessage.username, onDismissClick = dismiss)
-
+                is SignatureMessage.New -> NewSignatureSnackbar {
+                    dismiss()
+                    onActionClick(userMessage)
+                }
+                is DownloadFileMessage.New -> NewFileDownloadSnackbar(userMessage.sender) {
+                    dismiss()
+                    onActionClick(userMessage)
+                }
+                is ThermalWarningMessage -> ThermalWarningSnackbar(onDismissClick = dismiss)
                 AlertMessage.AutomaticRecordingMessage -> AutomaticRecordingSnackbarM3()
                 AlertMessage.LeftAloneMessage -> LeftAloneSnackbarM3()
                 AlertMessage.WaitingForOtherParticipantsMessage -> WaitingForOtherParticipantsSnackbarM3()
                 is AlertMessage.CustomMessage -> CustomMessageSnackbarM3(it as AlertMessage.CustomMessage)
 
-                is SignatureMessage.New -> NewSignatureSnackbar {
-                    dismiss()
-                    onActionClick(userMessage)
-                }
-
-                is DownloadFileMessage.New -> NewFileDownloadSnackbar(userMessage.sender) {
-                    dismiss()
-                    onActionClick(userMessage)
-                }
                 else -> {}
             }
             Spacer(Modifier.height(16.dp))

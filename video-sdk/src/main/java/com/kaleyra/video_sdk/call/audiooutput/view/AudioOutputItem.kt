@@ -48,7 +48,7 @@ internal fun AudioOutputItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -58,11 +58,12 @@ internal fun AudioOutputItem(
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.Center) {
+            val bodyLargeStyle = MaterialTheme.typography.bodyLarge
             Text(
                 text = titleFor(audioDevice),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
+                style = if (selected) MaterialTheme.typography.titleMedium.copy(letterSpacing = bodyLargeStyle.letterSpacing) else bodyLargeStyle,
                 color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
             )
             val subtitle = subtitleFor(audioDevice)
@@ -129,7 +130,7 @@ private fun subtitleFor(device: AudioDeviceUi): String? =
     }
 
 @Composable
-private fun painterFor(device: AudioDeviceUi): Painter = painterResource(
+fun painterFor(device: AudioDeviceUi): Painter = painterResource(
     id = when (device) {
         is AudioDeviceUi.LoudSpeaker -> R.drawable.ic_kaleyra_loud_speaker
         is AudioDeviceUi.EarPiece -> R.drawable.ic_kaleyra_earpiece

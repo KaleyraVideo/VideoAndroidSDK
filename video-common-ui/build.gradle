@@ -83,6 +83,7 @@ dependencies {
     testImplementation catalog.coroutinesTest
     implementation catalog.androidxTestCoreKtx
     testImplementation catalog.javaAssist
+    testImplementation kaleyraCatalog.kaleyraVideoCoreAv
     testImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
     testImplementation kaleyraCatalog.kaleyraVideo
 
@@ -92,13 +93,15 @@ dependencies {
     androidTestImplementation catalog.mockkAndroid
     androidTestImplementation catalog.androidxTestEspressoIntents
     androidTestImplementation catalog.junitTestExt
+    androidTestImplementation kaleyraCatalog.kaleyraVideo
+    androidTestImplementation kaleyraCatalog.kaleyraVideoExtensionAudio
 
     implementation sampleAppCatalog.androidxWorkRuntime
     implementation sampleAppCatalog.androidxWorkRuntimeKtx
 
     /** Kaleyra **/
     implementation kaleyraCatalog.kaleyraVideoUtils
-
+    compileOnly kaleyraCatalog.kaleyraVideoCoreAv
     compileOnly kaleyraCatalog.kaleyraVideo
     compileOnly kaleyraCatalog.kaleyraVideoExtensionAudio
 }

@@ -181,7 +181,7 @@
     <string name="kaleyra_virtual_background_picker_title">Selecionar fundo virtual</string>
     <string name="kaleyra_virtual_background_none">Nenhum</string>
     <string name="kaleyra_virtual_background_blur">Desfoque</string>
-    <string name="kaleyra_virtual_background_image">Imagem</string>
+    <string name="kaleyra_virtual_background_image">Fundo virtual</string>
 
     <!-- Compartilhamento de Arquivo -->
     <string name="kaleyra_fileshare">Compartilhamento de arquivo</string>

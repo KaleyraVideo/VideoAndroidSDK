@@ -23,13 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.R
@@ -44,6 +44,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -51,6 +52,7 @@ import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
@@ -72,6 +74,9 @@ internal fun SheetPanelContent(
         callActions.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val virtualBackgroundViewModel = viewModel<VirtualBackgroundViewModel>(factory = VirtualBackgroundViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val virtualBackgroundUiState = virtualBackgroundViewModel.uiState.collectAsStateWithLifecycle()
 
     SheetPanelContent(
         modifier = modifier,
@@ -111,6 +116,11 @@ internal fun SheetPanelContent(
 
                     is FlipCameraAction -> viewModel.switchCamera()
                     is AudioAction -> onModularComponentRequest(ModularComponent.Audio)
+                    is SettingsAction -> {
+                        val displayFullscreenSettings = DeepFilterNetModule.isAvailable() && virtualBackgroundUiState.value.backgroundList.value.isNotEmpty()
+                        if (displayFullscreenSettings) onModularComponentRequest(ModularComponent.Settings)
+                        else onModularComponentRequest(ModularComponent.VoiceSettings)
+                    }
                     is ChatAction -> onModularComponentRequest(ModularComponent.Chat)
                     is FileShareAction -> onModularComponentRequest(ModularComponent.FileShare)
                     is SignatureAction -> onModularComponentRequest(ModularComponent.SignDocuments)

@@ -37,6 +37,9 @@ import com.kaleyra.video_common_ui.call.CameraStreamConstants.CAMERA_STREAM_ID
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils
 import com.kaleyra.video_common_ui.connectionservice.ConnectionServiceUtils.isConnectionServiceEnabled
 import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService.Companion.answer
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService.Companion.hangUp
+import com.kaleyra.video_common_ui.connectionservice.KaleyraCallConnectionService.Companion.reject
 import com.kaleyra.video_common_ui.mapper.InputMapper.toAudioInput
 import com.kaleyra.video_common_ui.mapper.InputMapper.toCameraVideoInput
 import com.kaleyra.video_common_ui.notification.fileshare.FileShareVisibilityObserver
@@ -204,6 +207,7 @@ class CallActionsViewModelTest {
     fun testConnectionServiceAnswer() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
+            coEvery { answer() } returns true
             viewModel = spyk(
                 CallActionsViewModel(
                     configure = { mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock) },
@@ -214,7 +218,27 @@ class CallActionsViewModelTest {
             advanceUntilIdle()
             viewModel.accept()
             advanceUntilIdle()
-            coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+            coVerify(exactly = 1) { answer() }
+        }
+    }
+
+    @Test
+    fun testCallAnswerOnConnectionServiceAnswerFailure() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            coEvery { answer() } returns false
+            viewModel = spyk(
+                CallActionsViewModel(
+                    configure = { mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock) },
+                    virtualBackgroundStateManager = virtualBackgroundManager
+                )
+            )
+
+            advanceUntilIdle()
+            viewModel.accept()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { answer() }
+            verify(exactly = 1) { callMock.connect() }
         }
     }
 
@@ -242,6 +266,7 @@ class CallActionsViewModelTest {
     fun testHangUpWhenConnectionServiceIsEnabledAndCallIsRinging() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
+            coEvery { reject() } returns true
             every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
 
             viewModel = spyk(
@@ -254,7 +279,29 @@ class CallActionsViewModelTest {
             advanceUntilIdle()
             viewModel.hangUp()
             advanceUntilIdle()
-            coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
+            coVerify(exactly = 1) { reject() }
+        }
+    }
+
+    @Test
+    fun testHangUpOnConnectionServiceRejectFailure() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            coEvery { reject() } returns false
+            every { callMock.toCallStateUi() } returns MutableStateFlow(CallStateUi.Ringing)
+
+            viewModel = spyk(
+                CallActionsViewModel(
+                    configure = { mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock) },
+                    virtualBackgroundStateManager = virtualBackgroundManager
+                )
+            )
+
+            advanceUntilIdle()
+            viewModel.hangUp()
+            advanceUntilIdle()
+            coVerify(exactly = 1) { reject() }
+            verify(exactly = 1) { callMock.end() }
         }
     }
 
@@ -468,10 +515,10 @@ class CallActionsViewModelTest {
     @Test
     fun audioInputAwaitingPermission_callActionsUiState_micActionWarning() = runTest {
         val actions = MutableStateFlow(listOf(MicAction()))
-        val audioInput = mockk<Input.Audio> {
+        val audioInput = mockk<Input.Audio.My> {
             every { state } returns MutableStateFlow(Input.State.Closed.AwaitingPermission)
         }
-        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        val audioFlow = MutableStateFlow<Input.Audio.My?>(null)
         every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 
@@ -498,10 +545,10 @@ class CallActionsViewModelTest {
     @Test
     fun audioInputError_callActionsUiState_micActionError() = runTest {
         val actions = MutableStateFlow(listOf(MicAction()))
-        val audioInput = mockk<Input.Audio> {
+        val audioInput = mockk<Input.Audio.My> {
             every { state } returns MutableStateFlow(Input.State.Closed.Error)
         }
-        val audioFlow = MutableStateFlow<Input.Audio?>(null)
+        val audioFlow = MutableStateFlow<Input.Audio.My?>(null)
         every { callMock.toCallActions() } returns actions
         every { callMock.toAudioInput() } returns audioFlow
 
@@ -1725,6 +1772,7 @@ class CallActionsViewModelTest {
     fun testHangUpWhenConnectionServiceIsEnabledAndCallIsNotRinging() = runTest {
         mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
             every { isConnectionServiceEnabled } returns true
+            coEvery { hangUp() } returns true
 
             viewModel = spyk(CallActionsViewModel(
                 configure = { mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock) },
@@ -1734,7 +1782,26 @@ class CallActionsViewModelTest {
 
             viewModel.hangUp()
             runCurrent()
-            coVerify(exactly = 1) { KaleyraCallConnectionService.hangUp() }
+            coVerify(exactly = 1) { hangUp() }
+        }
+    }
+
+    @Test
+    fun testHangUpOnConnectionServiceHangUpFailure() = runTest {
+        mockkObject(ConnectionServiceUtils, KaleyraCallConnectionService) {
+            every { isConnectionServiceEnabled } returns true
+            coEvery { hangUp() } returns false
+
+            viewModel = spyk(CallActionsViewModel(
+                configure = { mockkSuccessfulConfiguration(conference = conferenceMock, conversation = conversationMock) },
+                virtualBackgroundStateManager = virtualBackgroundManager
+            ))
+            advanceUntilIdle()
+
+            viewModel.hangUp()
+            runCurrent()
+            coVerify(exactly = 1) { hangUp() }
+            verify(exactly = 1) { callMock.end() }
         }
     }
 

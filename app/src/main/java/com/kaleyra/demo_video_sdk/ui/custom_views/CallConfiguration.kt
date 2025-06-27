@@ -184,7 +184,7 @@ fun Set<CallUI.Button>.mapToConfigActions(): Set<ConfigAction> {
 fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
     return map { action ->
         when (action) {
-            ConfigAction.Audio -> CallUI.Button.AudioOutput
+            ConfigAction.Audio -> CallUI.Button.Settings
             ConfigAction.ChangeVolume -> CallUI.Button.Volume
             ConfigAction.ChangeZoom -> CallUI.Button.Zoom
             ConfigAction.FileShare -> CallUI.Button.FileShare
@@ -197,7 +197,7 @@ fun Set<ConfigAction>.mapToCallUIButtons(): Set<CallUI.Button> {
             ConfigAction.ToggleCamera -> CallUI.Button.Camera
             ConfigAction.ToggleFlashlight -> CallUI.Button.FlashLight
             ConfigAction.ToggleMicrophone -> CallUI.Button.Microphone
-            ConfigAction.CameraEffects -> CallUI.Button.CameraEffects
+            ConfigAction.CameraEffects -> CallUI.Button.Settings
             is ConfigAction.OpenUrl -> CallUI.Button.Custom(
                 config = CallUI.Button.Custom.Configuration(
                     icon = R.drawable.common_full_open_on_phone,

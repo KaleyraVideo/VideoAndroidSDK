@@ -585,8 +585,10 @@ class StreamViewModelTest {
             val audio = AudioUi(id = "audioId")
             val uriMock = mockk<Uri>(relaxed = true)
             val callState = MutableStateFlow<CallStateUi>(CallStateUi.RingingRemotely)
+            val streams = MutableStateFlow(listOf(streamMock1))
             with(callMock) {
                 every { toCallStateUi() } returns callState
+                every { toStreamsUi() } returns streams
                 every { toMyCameraVideoUi() } returns flowOf(video)
                 every { toMyCameraStreamAudioUi() } returns flowOf(audio)
                 every { toOtherUserInfo() } returns flowOf(
@@ -598,7 +600,7 @@ class StreamViewModelTest {
                 every { preferredType } returns MutableStateFlow(Call.PreferredType.audioOnly())
             }
 
-            val layoutController = StreamLayoutControllerMock(initialStreamItems = listOf(streamMock1.toStreamItem()))
+            val layoutController = StreamLayoutControllerMock()
             val viewModel = StreamViewModel(
                 configure = { mockkSuccessfulConfiguration(conference = conferenceMock) },
                 layoutController = layoutController
@@ -621,10 +623,7 @@ class StreamViewModelTest {
             // check preview is not update yet on non pre call state
             assertEquals(expected, viewModel.uiState.first().preview)
 
-            // update the streams
-            layoutController.setStreamItems(
-                listOf(streamMock1.toStreamItem(), streamMock2.toStreamItem())
-            )
+            streams.value = listOf(streamMock1, streamMock2)
             advanceUntilIdle()
 
             assertEquals(null, viewModel.uiState.first().preview)

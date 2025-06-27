@@ -29,6 +29,7 @@ sealed class VirtualBackgroundUi(open val id: String) {
     /**
      * Blue Virtual Background
      * @property id String blur virtual background identifier
+     * @property factor Float representation of blur amount
      * @constructor
      */
     data class Blur(override val id: String, @FloatRange(0.0, 1.0)  val factor: Float = 1f): VirtualBackgroundUi(id)
@@ -36,6 +37,7 @@ sealed class VirtualBackgroundUi(open val id: String) {
     /**
      * Image Virtual Background
      * @property id String image virtual background identifier
+     * @property uri Uri image virtual background uri resource
      * @constructor
      */
     data class Image(override val id: String, val uri: ImmutableUri = ImmutableUri()): VirtualBackgroundUi(id)

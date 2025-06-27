@@ -72,9 +72,9 @@ class CallNotificationActionReceiverTest {
             coroutine<suspend (CallUI) -> Unit>().coInvoke(callMock)
         }
         every { ConnectionServiceUtils.isConnectionServiceEnabled } returns false
-        coEvery { KaleyraCallConnectionService.answer() } returns Unit
-        coEvery { KaleyraCallConnectionService.reject() } returns Unit
-        coEvery { KaleyraCallConnectionService.hangUp() } returns Unit
+        coEvery { KaleyraCallConnectionService.answer() } returns true
+        coEvery { KaleyraCallConnectionService.reject() } returns true
+        coEvery { KaleyraCallConnectionService.hangUp() } returns true
         mockkObject(KaleyraVideo)
         every { KaleyraVideo.isConfigured } returns true
         every { receiver.goAsync() } returns mockk(relaxed = true)
@@ -125,6 +125,22 @@ class CallNotificationActionReceiverTest {
     }
 
     @Test
+    fun testActionHangUpWithConnectionServiceAndConnectionHangUpFailure() = runTest {
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns true
+        coEvery { KaleyraCallConnectionService.hangUp() } returns false
+        val intent = Intent().apply {
+            putExtra(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_HANGUP)
+        }
+
+        receiver.onReceive(contextMock, intent)
+
+        advanceUntilIdle()
+        verify(exactly = 1) { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        coVerify(exactly = 1) { KaleyraCallConnectionService.hangUp() }
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
     fun testActionDecline() = runTest {
         val intent = Intent().apply {
             putExtra(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_DECLINE)
@@ -134,6 +150,22 @@ class CallNotificationActionReceiverTest {
 
         advanceUntilIdle()
         verify(exactly = 1) { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        verify(exactly = 1) { callMock.end() }
+    }
+
+    @Test
+    fun testActionDeclineWithConnectionServiceAndConnectionRejectFailure() = runTest {
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns true
+        coEvery { KaleyraCallConnectionService.reject() } returns false
+        val intent = Intent().apply {
+            putExtra(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_DECLINE)
+        }
+
+        receiver.onReceive(contextMock, intent)
+
+        advanceUntilIdle()
+        verify(exactly = 1) { NotificationManager.cancel(CallNotificationProducer.CALL_NOTIFICATION_ID) }
+        coVerify(exactly = 1) { KaleyraCallConnectionService.reject() }
         verify(exactly = 1) { callMock.end() }
     }
 
@@ -174,6 +206,21 @@ class CallNotificationActionReceiverTest {
 
         advanceUntilIdle()
         coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+    }
+
+    @Test
+    fun testActionAnswerWithConnectionServiceAndConnectionAnswerFailure() = runTest {
+        every { ConnectionServiceUtils.isConnectionServiceEnabled } returns true
+        coEvery { KaleyraCallConnectionService.answer() } returns false
+        val intent = Intent().apply {
+            putExtra(CallNotificationExtra.NOTIFICATION_ACTION_EXTRA, ACTION_ANSWER)
+        }
+
+        receiver.onReceive(contextMock, intent)
+
+        advanceUntilIdle()
+        coVerify(exactly = 1) { KaleyraCallConnectionService.answer() }
+        verify(exactly = 1) { callMock.connect() }
     }
 
     @Test

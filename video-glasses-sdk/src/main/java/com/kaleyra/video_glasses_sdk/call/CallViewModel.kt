@@ -332,7 +332,7 @@ internal class CallViewModel(configure: suspend () -> Configuration, private var
                 inputRequest is Inputs.RequestResult.Error.PermissionDenied.SystemAppPreference.Forever
             )
 
-            val input = inputRequest.getOrNull<Input.Audio>() ?: return@launchWhenResumed
+            val input = inputRequest.getOrNull<Input.Audio.My>() ?: return@launchWhenResumed
 
             input.state.filter { it is Input.State.Closed }.onEach {
                 _micPermission.value = Permission(false, false)

@@ -24,8 +24,11 @@ import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallActivityS
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallServiceStart
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureCallSounds
 import com.kaleyra.video_common_ui.ConferenceUIExtensions.configureScreenShareOverlayProducer
+import com.kaleyra.video_extension_audio.extensions.CollaborationAudioExtensions.enableCallSounds
+import com.kaleyra.video_extension_audio.extensions.disableCallSounds
 import com.kaleyra.video_utils.logging.PriorityLogger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -142,5 +145,13 @@ class ConferenceUI(
             activityClazz = callActivityClazz,
             actions = callActions?.let { MutableStateFlow(it) }
             ).apply { callUIMap[id] = this }
+    }
+
+    fun disableCallSounds() {
+        call.replayCache.firstOrNull()?.disableCallSounds()
+    }
+
+    fun enableCallSounds() {
+        call.replayCache.firstOrNull()?.enableCallSounds(logger = KaleyraVideo.logger, MainScope())
     }
 }

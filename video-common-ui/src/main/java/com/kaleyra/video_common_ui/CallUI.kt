@@ -36,9 +36,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import java.util.Comparator
 import java.util.Objects
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Event representing the display mode set
@@ -215,16 +215,37 @@ class CallUI(
         companion object Collections {
 
             /**
+             * Defines a collection of [Comparator] implementations for sorting [CallUI.Button] elements.
+             * This sealed class allows for a restricted set of known comparators to be used within the system.
+             */
+            sealed class Comparators {
+
+                /**
+                 * A default comparator for [CallUI.Button]s.
+                 *
+                 * This comparator sorts buttons based on a predefined order specified by the `all` list.
+                 * Buttons appearing earlier in the `all` list will be considered "less than" buttons
+                 * appearing later in the list. If a button is not found in the `all` list, its behavior
+                 * in the comparison will be based on `indexOf` returning -1, potentially leading to
+                 * it being sorted towards the beginning or end depending on the other button's position.
+                 *
+                 * It's crucial that the `all` list contains all relevant [CallUI.Button] instances
+                 * that are expected to be sorted by this comparator for predictable behavior.
+                 */
+                data object Default: Comparator<CallUI.Button>, Comparators() {
+                    override fun compare(button1: Button?, button2: Button?) = all.indexOf(button1) - all.indexOf(button2)
+                }
+            }
+
+            /**
              * A set of all Call Buttons
              */
             val all: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
                     Camera,
                     FlipCamera,
-                    CameraEffects,
-                    AudioOutput,
                     FileShare,
                     ScreenShare(),
                     Zoom,
@@ -233,7 +254,8 @@ class CallUI(
                     Chat,
                     Participants,
                     Whiteboard,
-                    Signature
+                    Signature,
+                    Settings,
                 )
             }
 
@@ -241,12 +263,12 @@ class CallUI(
              * Default set of Call Buttons for audio calls
              */
             val audioCall: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
-                    AudioOutput,
                     Volume,
-                    Participants
+                    Participants,
+                    Settings
                 )
             }
 
@@ -254,15 +276,14 @@ class CallUI(
              * Default set of Call Buttons for video calls
              */
             val videoCall: Set<Button> by lazy {
-                setOf(
+                linkedSetOf(
                     HangUp,
                     Microphone,
                     Camera,
                     FlipCamera,
-                    CameraEffects,
-                    AudioOutput,
                     Volume,
-                    Participants
+                    Participants,
+                    Settings,
                 )
             }
         }
@@ -336,12 +357,27 @@ class CallUI(
         /**
          * Camera Effects button
          */
+        @Deprecated(
+            message = "CameraEffects button has been deprecated since version v.4.10.0 and will be removed in a further release.\n" +
+                "Camera Effects are now included in settings UI that can be obtained by adding CallUI.Button.Settings.",
+            replaceWith = ReplaceWith("CallUi.Button.Settings")
+        )
         data object CameraEffects : Button()
 
         /**
          * Audio output button
          */
+        @Deprecated(
+            message = "AudioOutput button has been deprecated since version v.4.10.0 and will be removed in a further release.\n" +
+                "Audio Outputs are now included in settings UI that can be obtained by adding CallUI.Button.Settings.",
+            replaceWith = ReplaceWith("CallUi.Button.Settings")
+        )
         data object AudioOutput : Button()
+
+        /**
+         * Audio output button
+         */
+        data object Settings : Button()
 
         /**
          * Change zoom button

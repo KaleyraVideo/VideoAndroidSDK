@@ -50,6 +50,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.NotifiableCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SIGNATURE_ACTION_ID
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -189,6 +190,9 @@ internal class CallActionsViewModel(
                         )
 
                         is AudioAction -> action.copy(audioDevice = audioDevice, isEnabled = !isCallEnded)
+
+                        is SettingsAction -> action.copy(isEnabled = !isCallEnded)
+
                         is FileShareAction -> action.copy(
                             isEnabled = isCallActive && !isCallEnded,
                             notificationCount = (uiState.value.actionList.value.firstOrNull { it is NotifiableCallAction && it.id == FILE_SHARE_ACTION_ID } as? NotifiableCallAction)?.notificationCount
@@ -348,7 +352,10 @@ internal class CallActionsViewModel(
     }
 
     fun accept() {
-        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch {
+            if (KaleyraCallConnectionService.answer()) return@launch
+            call.getValue()?.connect()
+        }
         else call.getValue()?.connect()
     }
 
@@ -426,8 +433,14 @@ internal class CallActionsViewModel(
     fun hangUp() {
         when {
             !ConnectionServiceUtils.isConnectionServiceEnabled -> call.getValue()?.end()
-            uiState.value.isRinging -> viewModelScope.launch { KaleyraCallConnectionService.reject() }
-            else -> viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+            uiState.value.isRinging -> viewModelScope.launch {
+                if (KaleyraCallConnectionService.reject()) return@launch
+                call.getValue()?.end()
+            }
+            else -> viewModelScope.launch {
+                if (KaleyraCallConnectionService.hangUp()) return@launch
+                call.getValue()?.end()
+            }
         }
     }
 

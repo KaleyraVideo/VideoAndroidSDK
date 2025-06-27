@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.virtualbackground.view
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -44,7 +45,7 @@ internal fun VirtualBackgroundItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -59,11 +60,12 @@ internal fun VirtualBackgroundItem(
             tint = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current
         )
         Spacer(modifier = Modifier.width(16.dp))
+        val bodyLargeStyle = MaterialTheme.typography.bodyLarge
         Text(
             text = textFor(background),
             maxLines = 1,
             color = if (selected) MaterialTheme.colorScheme.primary else LocalContentColor.current,
-            style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
+            style = if (selected) MaterialTheme.typography.titleMedium.copy(letterSpacing = bodyLargeStyle.letterSpacing) else bodyLargeStyle,
         )
     }
 }

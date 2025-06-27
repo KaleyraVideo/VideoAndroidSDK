@@ -20,16 +20,23 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.AudioOutputComponent
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioDeviceUi
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
+import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,17 +54,6 @@ class AudioOutputOutputComponentTest {
 
     private var isCloseClicked = false
 
-    @Before
-    fun setUp() {
-        composeTestRule.setContent {
-            AudioOutputComponent(
-                uiState = AudioOutputUiState(audioDeviceList = items),
-                onItemClick = { audioDevice = it },
-                onCloseClick = { isCloseClicked = true }
-            )
-        }
-    }
-
     @After
     fun tearDown() {
         items = ImmutableList(listOf())
@@ -67,12 +63,26 @@ class AudioOutputOutputComponentTest {
 
     @Test
     fun audioOutputTitleDisplayed() {
+        composeTestRule.setContent {
+            AudioOutputComponent(
+                uiState = AudioOutputUiState(audioDeviceList = items),
+                onItemClick = { audioDevice = it },
+                onCloseClick = { isCloseClicked = true }
+            )
+        }
         val title = composeTestRule.activity.getString(R.string.kaleyra_audio_route_title)
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
     }
 
     @Test
     fun userClicksClose_onCloseClickInvoked() {
+        composeTestRule.setContent {
+            AudioOutputComponent(
+                uiState = AudioOutputUiState(audioDeviceList = items),
+                onItemClick = { audioDevice = it },
+                onCloseClick = { isCloseClicked = true }
+            )
+        }
         val close = composeTestRule.activity.getString(R.string.kaleyra_close)
         composeTestRule.onNodeWithContentDescription(close).performClick()
         assert(isCloseClicked)
@@ -80,9 +90,32 @@ class AudioOutputOutputComponentTest {
 
     @Test
     fun userClicksOnItem_onItemClickInvoked() {
+        composeTestRule.setContent {
+            AudioOutputComponent(
+                uiState = AudioOutputUiState(audioDeviceList = items),
+                onItemClick = { audioDevice = it },
+                onCloseClick = { isCloseClicked = true }
+            )
+        }
         items = ImmutableList(listOf(AudioDeviceUi.LoudSpeaker, AudioDeviceUi.Muted))
         val loudspeaker = composeTestRule.activity.getString(R.string.kaleyra_call_action_audio_route_loudspeaker)
         composeTestRule.onNodeWithText(loudspeaker).performClick()
         assertEquals(AudioDeviceUi.LoudSpeaker::class.java, audioDevice!!.javaClass)
+    }
+
+    @Test
+    fun legacyFlagDisplayMutedAudioOutputUiSet_muteCallSoundsWhenMutedFunctionCalled() {
+        val viewModelMock = mockk<AudioOutputViewModel>(relaxed = true) {
+            every { uiState } returns MutableStateFlow(AudioOutputUiState())
+        }
+        composeTestRule.setContent {
+            AudioOutputComponent(
+                viewModel = viewModelMock,
+                onDismiss = {},
+                displayMutedAudioUi = true
+            )
+        }
+
+        verify { viewModelMock.muteCallSoundsWhenMuted() }
     }
 }

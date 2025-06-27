@@ -22,12 +22,16 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 
 /**
  * Audio Device State
+ * @property lastUsedDeviceId String? last valid audio device used
  * @property audioDeviceList ImmutableList<AudioDeviceUi> available audio devices list
  * @property playingDeviceId String? current playing device identifier
+ * @property areCallSoundsEnabled Boolean flag indicating if the call sounds are enabled or not
  * @constructor
  */
 @Immutable
 internal data class AudioOutputUiState(
+    val lastUsedDeviceId: String? = null,
     val audioDeviceList: ImmutableList<AudioDeviceUi> = ImmutableList(emptyList()),
-    val playingDeviceId: String? = null
+    val playingDeviceId: String? = null,
+    val areCallSoundsEnabled: Boolean = true
 ) : UiState

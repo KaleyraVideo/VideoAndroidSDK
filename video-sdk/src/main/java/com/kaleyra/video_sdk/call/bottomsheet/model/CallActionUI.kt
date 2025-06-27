@@ -19,6 +19,8 @@ const val SIGNATURE_ACTION_ID = "signature_action_id"
 
 const val AUDIO_ACTION_ID = "audio_action_id"
 
+const val SETTINGS_ACTION_ID = "settings_action_id"
+
 const val FILE_SHARE_ACTION_ID = "file_share_action_id"
 
 const val SCREEN_SHARE_ACTION_ID = "screen_share_action_id"
@@ -94,6 +96,13 @@ internal data class FlipCameraAction(
 
 @Immutable
 internal data class AudioAction(
+    override val id: String = AUDIO_ACTION_ID,
+    val audioDevice: AudioDeviceUi = AudioDeviceUi.Muted,
+    override val isEnabled: Boolean = true
+) : CallActionUI
+
+@Immutable
+internal data class SettingsAction(
     override val id: String = AUDIO_ACTION_ID,
     val audioDevice: AudioDeviceUi = AudioDeviceUi.Muted,
     override val isEnabled: Boolean = true

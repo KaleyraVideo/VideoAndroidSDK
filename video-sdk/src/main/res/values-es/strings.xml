@@ -247,7 +247,7 @@
     <string name="kaleyra_utterance_recording_started">Comenzando la grabación ahora</string>
     <string name="kaleyra_utterance_recording_stopped">Grabación detenida</string>
     <string name="kaleyra_virtual_background_blur">Desenfoque</string>
-    <string name="kaleyra_virtual_background_image">Imagen</string>
+    <string name="kaleyra_virtual_background_image">Fondo virutal</string>
     <string name="kaleyra_virtual_background_none">Ninguno</string>
     <string name="kaleyra_virtual_background_picker_title">Seleccionar fondo virtual</string>
     <string name="kaleyra_waiting_for_other_participants">Esperando a otros participantes…</string>

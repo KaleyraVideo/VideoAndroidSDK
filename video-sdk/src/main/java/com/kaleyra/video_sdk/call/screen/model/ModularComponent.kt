@@ -4,6 +4,8 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 internal enum class ModularComponent {
+    Settings,
+    VoiceSettings,
     Audio,
     ScreenShare,
     FileShare,

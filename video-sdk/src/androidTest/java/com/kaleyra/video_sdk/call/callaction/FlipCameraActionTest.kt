@@ -1,5 +1,3 @@
-package com.kaleyra.video_sdk.call.callaction
-
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier

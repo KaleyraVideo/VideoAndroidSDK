@@ -38,7 +38,6 @@ internal object FileShareMapper {
 
     fun CallUI.toSharedFilesUi(): Flow<Set<SharedFileUi>> {
         val sharedFiles = hashMapOf<String, SharedFileUi>()
-        val cancelledUploads = hashMapOf<String, SharedFileUi>()
 
         return combine(sharedFolder.files, this.toMe()) { f, m -> Pair(f, m) }
             .flatMapLatest { (files, me) ->
@@ -47,16 +46,11 @@ internal object FileShareMapper {
                     .map { it.mapToSharedFileUi(me.userId) }
                     .merge()
                     .transform { sharedFileUi ->
-                        if (!sharedFileUi.isCancelledUpload()) {
-                            sharedFiles[sharedFileUi.id] = sharedFileUi
-                        } else {
-                            sharedFiles.remove(sharedFileUi.id)
-                            cancelledUploads[sharedFileUi.id] = sharedFileUi
-                        }
+                        sharedFiles[sharedFileUi.id] = sharedFileUi
 
                         val values = sharedFiles.values
-                        if (values.size + cancelledUploads.values.size == files.size) {
-                            emit(values.toSet())
+                        if (values.size == files.size) {
+                            emit(values.filter { it.state !is SharedFileUi.State.Cancelled }.toSet())
                         }
                     }
             }.distinctUntilChanged()

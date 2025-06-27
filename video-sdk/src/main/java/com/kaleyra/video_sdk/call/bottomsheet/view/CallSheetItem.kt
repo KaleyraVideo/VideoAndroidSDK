@@ -16,6 +16,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -27,6 +28,7 @@ import com.kaleyra.video_sdk.call.callactions.view.FlipCameraAction
 import com.kaleyra.video_sdk.call.callactions.view.HangUpAction
 import com.kaleyra.video_sdk.call.callactions.view.MicAction
 import com.kaleyra.video_sdk.call.callactions.view.ScreenShareAction
+import com.kaleyra.video_sdk.call.callactions.view.SettingsAction
 import com.kaleyra.video_sdk.call.callactions.view.SignDocumentAction
 import com.kaleyra.video_sdk.call.callactions.view.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.callactions.view.WhiteboardAction
@@ -45,6 +47,7 @@ internal fun CallSheetItem(
     onScreenShareToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
@@ -100,6 +103,15 @@ internal fun CallSheetItem(
                 modifier = modifier
             )
         }
+        is SettingsAction -> {
+            SettingsAction(
+                label = label,
+                enabled = ca.isEnabled,
+                onClick = onSettingsClick,
+                modifier = modifier
+            )
+        }
+
         is AudioAction -> {
             AudioAction(
                 audioDevice = ca.audioDevice,

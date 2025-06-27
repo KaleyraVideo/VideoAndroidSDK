@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.kaleyra.video_sdk.call.screen.view
 
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,11 +26,14 @@ import com.kaleyra.video_sdk.call.fileshare.FileShareComponent
 import com.kaleyra.video_sdk.call.participants.ParticipantsComponent
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.ScreenShareComponent
+import com.kaleyra.video_sdk.call.settings.SettingsComponent
+import com.kaleyra.video_sdk.call.voice_settings.ModalVoiceSettingsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentsComponent
 import com.kaleyra.video_sdk.call.signature.SignDocumentViewComponent
 import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundComponent
 import com.kaleyra.video_sdk.call.whiteboard.WhiteboardComponent
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
 internal val CallScreenModalSheetTag = "CallScreenModalSheetTag"
@@ -51,6 +56,7 @@ internal fun CallScreenModalSheet(
     currentModularComponent = modularComponent
 
     var displaySignDocumentsOnSignDocumentViewDismiss by remember { mutableStateOf(false) }
+    var displayAudioComponentOnSettingsDismiss by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val onDismiss: (ModularComponent) -> Unit = remember(sheetState) {
@@ -68,6 +74,7 @@ internal fun CallScreenModalSheet(
     }
 
     if (modularComponent != null) {
+        val scope = rememberCoroutineScope()
         ModalBottomSheet(
             onDismissRequest = onRequestDismiss,
             shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
@@ -78,7 +85,46 @@ internal fun CallScreenModalSheet(
             modifier = modifier.testTag(CallScreenModalSheetTag)
         ) {
             when (modularComponent) {
-                ModularComponent.Audio -> AudioOutputComponent(onDismiss = { onDismiss(ModularComponent.Audio) })
+                ModularComponent.Settings -> SettingsComponent(
+                    onUserMessageActionClick = onUserMessageActionClick,
+                    isLargeScreen = false,
+                    onDismiss = {
+                        if (!displayAudioComponentOnSettingsDismiss) onDismiss(ModularComponent.Settings)
+                    },
+                    onChangeAudioOutputRequested = {
+                        scope.launch {
+                            displayAudioComponentOnSettingsDismiss = true
+                            sheetState.hide()
+                            onRequestOtherModularComponent(ModularComponent.Audio)
+                            sheetState.expand()
+                        }
+                    }
+                )
+
+                ModularComponent.VoiceSettings -> {
+                    ModalVoiceSettingsComponent(
+                        onChangeAudioOutputRequested = {
+                            scope.launch {
+                                displayAudioComponentOnSettingsDismiss = true
+                                sheetState.hide()
+                                onRequestOtherModularComponent(ModularComponent.Audio)
+                                sheetState.expand()
+                            }
+                        },
+                        onDismiss = {
+                            if (!displayAudioComponentOnSettingsDismiss) onDismiss(ModularComponent.VoiceSettings)
+                        }
+                    )
+                }
+
+                ModularComponent.Audio -> {
+                    AudioOutputComponent(
+                        displayMutedAudioUi = !displayAudioComponentOnSettingsDismiss,
+                        onDismiss = {
+                            onDismiss(ModularComponent.Audio)
+                        })
+                    displayAudioComponentOnSettingsDismiss = false
+                }
 
                 ModularComponent.ScreenShare -> ScreenShareComponent(
                     onDismiss = { onDismiss(ModularComponent.ScreenShare) },
@@ -101,8 +147,12 @@ internal fun CallScreenModalSheet(
                         if (!displaySignDocumentsOnSignDocumentViewDismiss) onDismiss(ModularComponent.SignDocuments)
                     },
                     onSignDocumentSelected = {
-                        displaySignDocumentsOnSignDocumentViewDismiss = true
-                        onRequestOtherModularComponent(ModularComponent.SignDocumentView)
+                        scope.launch {
+                            displaySignDocumentsOnSignDocumentViewDismiss = true
+                            sheetState.hide()
+                            onRequestOtherModularComponent(ModularComponent.SignDocumentView)
+                            sheetState.expand()
+                        }
                     },
                     onUserMessageActionClick = onUserMessageActionClick,
                     isTesting = isTesting
@@ -111,9 +161,15 @@ internal fun CallScreenModalSheet(
                 ModularComponent.SignDocumentView -> {
                     val onSignDocumentClosed = remember(displaySignDocumentsOnSignDocumentViewDismiss) {
                         {
-                            if (displaySignDocumentsOnSignDocumentViewDismiss) onRequestOtherModularComponent(ModularComponent.SignDocuments)
-                            else onDismiss(ModularComponent.SignDocumentView)
-                            displaySignDocumentsOnSignDocumentViewDismiss = false
+                            scope.launch {
+                                if (displaySignDocumentsOnSignDocumentViewDismiss) {
+                                    sheetState.hide()
+                                    onRequestOtherModularComponent(ModularComponent.SignDocuments)
+                                    sheetState.expand()
+                                } else onDismiss(ModularComponent.SignDocumentView)
+                                displaySignDocumentsOnSignDocumentViewDismiss = false
+                            }
+                            Unit
                         }
                     }
                     SignDocumentViewComponent(
@@ -147,4 +203,5 @@ private fun isFullScreenComponent(component: ModularComponent): Boolean {
         || component == ModularComponent.Whiteboard
         || component == ModularComponent.SignDocuments
         || component == ModularComponent.SignDocumentView
+        || component == ModularComponent.Settings
 }

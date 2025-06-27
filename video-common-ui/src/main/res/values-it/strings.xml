@@ -85,4 +85,16 @@
     <string name="kaleyra_signature_notification_user_sending_file">%1$s ti ha inviato un documento da firmare.</string>
     <string name="kaleyra_signature_notification_sign_content_message">Vuoi firmalo?</string>
 
+    <!-- SETTINGS -->
+    <string name="kaleyra_strings_action_settings">Impostazioni</string>
+    <string name="kaleyra_strings_info_voice_settings">Impostazioni vocali</string>
+    <string name="kaleyra_strings_action_disable_all_sounds">Disattiva tutti i suoni</string>
+    <string name="kaleyra_strings_action_voice_change_audio_output">Cambia uscita audio</string>
+    <string name="kaleyra_strings_info_noise_suppression">Soppressione del rumore</string>
+    <string name="kaleyra_strings_action_noise_suppression_deepfilter_ai">DeepFilter AI</string>
+    <string name="kaleyra_strings_action_noise_suppression_standard">Standard</string>
+    <string name="kaleyra_strings_info_camera_settings">Effetti fotocamera</string>
+    <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Caricamento del modello in corso…</string>
+    <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Modello non disponibile</string>
+    <string name="kaleyra_strings_info_call_thermal_warning_message">Alcune funzionalità sono state disattivate a causa del surriscaldamento del dispositivo.</string>
 </resources>

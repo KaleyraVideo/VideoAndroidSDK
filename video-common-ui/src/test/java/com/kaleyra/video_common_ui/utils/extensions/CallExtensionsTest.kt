@@ -30,9 +30,11 @@ import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.MainDispatcherRule
 import com.kaleyra.video_common_ui.utils.AppLifecycle
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.bindCallButtons
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.deviceThermalManager
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.getMyInternalCamera
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsbInput
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.hasUsersWithCameraEnabled
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isCpuThrottling
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isIncoming
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyInternalCameraEnabled
 import com.kaleyra.video_common_ui.utils.extensions.CallExtensions.isMyInternalCameraUsingFrontLens
@@ -48,7 +50,10 @@ import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isDND
 import com.kaleyra.video_common_ui.utils.extensions.ContextExtensions.isSilent
 import com.kaleyra.video_utils.ContextRetainer
 import com.kaleyra.video_utils.MutableSharedStateFlow
+import com.kaleyra.video_utils.thermal.DeviceThermalManager
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkAll
@@ -57,12 +62,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -576,5 +582,78 @@ class CallExtensionsTest {
         Assert.assertEquals(CallUI.Button.Whiteboard, filteredButtons.first())
         Assert.assertEquals(CallUI.Button.FileShare, filteredButtons[1])
         Assert.assertEquals(CallUI.Button.Signature, filteredButtons[2])
+    }
+
+    @Test
+    fun `isCpuThrottling initializes DeviceThermalManager and starts monitoring on first call`() = runTest() {
+        val mockkDeviceThermalManager = mockk<DeviceThermalManager>()
+        every { mockkDeviceThermalManager.startThermalMonitoring() } just Runs
+        every { mockkDeviceThermalManager.throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.NONE)
+        call.deviceThermalManager = mockkDeviceThermalManager
+
+        call.isCpuThrottling(backgroundScope)
+        runCurrent()
+
+        verify { mockkDeviceThermalManager.startThermalMonitoring() }
+    }
+
+    @Test
+    fun `isCpuThrottling returns true when throttling status is CRITICAL`() = runTest(UnconfinedTestDispatcher()) {
+        val mockkDeviceThermalManager = mockk<DeviceThermalManager>()
+        every { mockkDeviceThermalManager.startThermalMonitoring() } just Runs
+        every { mockkDeviceThermalManager.throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.CRITICAL)
+        call.deviceThermalManager = mockkDeviceThermalManager
+
+        val isCpuThrottlingFLow = call.isCpuThrottling(backgroundScope)
+        runCurrent()
+
+        assertTrue(isCpuThrottlingFLow.first())
+    }
+
+    @Test
+    fun `isCpuThrottling returns false when throttling status is SEVERE`() = runTest(UnconfinedTestDispatcher()) {
+        val mockkDeviceThermalManager = mockk<DeviceThermalManager>()
+        every { mockkDeviceThermalManager.startThermalMonitoring() } just Runs
+        every { mockkDeviceThermalManager.throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.SEVERE)
+        call.deviceThermalManager = mockkDeviceThermalManager
+
+        val isCpuThrottlingFLow = call.isCpuThrottling(backgroundScope)
+        runCurrent()
+
+        assertFalse(isCpuThrottlingFLow.first())
+    }
+
+    @Test
+    fun `isCpuThrottling returns false when throttling status is MODERATE`() = runTest(UnconfinedTestDispatcher()) {
+        val mockkDeviceThermalManager = mockk<DeviceThermalManager>()
+        every { mockkDeviceThermalManager.startThermalMonitoring() } just Runs
+        every { mockkDeviceThermalManager.throttlingStatus } returns MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+        call.deviceThermalManager = mockkDeviceThermalManager
+
+        val isCpuThrottlingFLow = call.isCpuThrottling(backgroundScope)
+        runCurrent()
+
+        assertFalse(isCpuThrottlingFLow.first())
+    }
+
+    @Test
+    fun `isCpuThrottling flow updates correctly when throttling status changes`() = runTest(UnconfinedTestDispatcher()) {
+        val mockkDeviceThermalManager = mockk<DeviceThermalManager>()
+        every { mockkDeviceThermalManager.startThermalMonitoring() } just Runs
+        val thermalStatusFLow = MutableStateFlow(DeviceThermalManager.ThrottlingStatus.MODERATE)
+        every { mockkDeviceThermalManager.throttlingStatus } returns thermalStatusFLow
+        call.deviceThermalManager = mockkDeviceThermalManager
+
+        val isCpuThrottlingFLow = call.isCpuThrottling(backgroundScope)
+        runCurrent()
+        assertFalse(isCpuThrottlingFLow.first())
+
+        thermalStatusFLow.value = DeviceThermalManager.ThrottlingStatus.CRITICAL
+        runCurrent()
+        assertTrue(isCpuThrottlingFLow.first())
+
+        thermalStatusFLow.value = DeviceThermalManager.ThrottlingStatus.MODERATE
+        runCurrent()
+        assertFalse(isCpuThrottlingFLow.first())
     }
 }

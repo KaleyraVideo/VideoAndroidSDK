@@ -492,6 +492,7 @@ class VSheetDragContentTest {
                 onWhiteboardClick = { },
                 onSignatureClick = { },
                 onVirtualBackgroundToggle = { },
+                onSettingsClick = { },
                 modifier = Modifier.height(height)
             )
         }
@@ -527,7 +528,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -552,7 +554,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { },
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -577,7 +580,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -602,7 +606,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -627,7 +632,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -652,7 +658,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -677,7 +684,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { isClicked = true },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -702,7 +710,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onSignatureClick = { },
                 onWhiteboardClick = { isClicked = true },
-                onVirtualBackgroundToggle = { }
+                onVirtualBackgroundToggle = { },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()
@@ -727,7 +736,8 @@ class VSheetDragContentTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = { },
-                onVirtualBackgroundToggle = { isClicked = true }
+                onVirtualBackgroundToggle = { isClicked = true },
+                onSettingsClick = { }
             )
         }
         composeTestRule.onNodeWithContentDescription(description).assertHasClickAction()

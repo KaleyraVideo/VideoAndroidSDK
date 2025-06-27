@@ -19,6 +19,7 @@ package com.kaleyra.video_sdk.call.screenshare.view
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,7 @@ internal fun ScreenShareItem(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

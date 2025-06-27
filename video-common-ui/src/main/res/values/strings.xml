@@ -87,4 +87,16 @@
         <item quantity="other">New messages: %s</item>
     </plurals>
 
+    <!-- SETTINGS -->
+    <string name="kaleyra_strings_action_settings">Settings</string>
+    <string name="kaleyra_strings_info_voice_settings">Voice settings</string>
+    <string name="kaleyra_strings_action_disable_all_sounds">Disable all sounds</string>
+    <string name="kaleyra_strings_action_voice_change_audio_output">Change Audio Output</string>
+    <string name="kaleyra_strings_info_noise_suppression">Noise Suppression</string>
+    <string name="kaleyra_strings_action_noise_suppression_deepfilter_ai">DeepFilter AI</string>
+    <string name="kaleyra_strings_action_noise_suppression_standard">Standard</string>
+    <string name="kaleyra_strings_info_camera_settings">Camera Effects</string>
+    <string name="kaleyra_strings_info_deep_filter_net_model_loading_in_progress">Model loading in progress…</string>
+    <string name="kaleyra_strings_info_deep_filter_net_model_unavailable">Model not available</string>
+    <string name="kaleyra_strings_info_call_thermal_warning_message">Some features have been deactivated due to device overheating.</string>
 </resources>

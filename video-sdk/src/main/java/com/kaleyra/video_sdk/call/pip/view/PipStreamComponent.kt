@@ -156,7 +156,6 @@ internal fun PipStreamComponent(
             if (uiState.preview != null) {
                 val video = uiState.preview.video
                 StreamPreview(
-                    modifier = Modifier,
                     streamView = video?.view?.preCallStreamViewSettings(),
                     userInfos = uiState.preview.userInfos,
                     showStreamView = video?.view != null && video.isEnabled,

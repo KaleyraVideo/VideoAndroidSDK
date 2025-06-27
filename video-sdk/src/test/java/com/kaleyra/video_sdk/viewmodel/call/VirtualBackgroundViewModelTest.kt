@@ -29,10 +29,12 @@ import com.kaleyra.video_common_ui.ConferenceUI
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
 import com.kaleyra.video_common_ui.mapper.InputMapper
 import com.kaleyra.video_common_ui.mapper.InputMapper.toMyCameraStream
+import com.kaleyra.video_common_ui.utils.extensions.CallExtensions
 import com.kaleyra.video_sdk.MainDispatcherRule
 import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManagerImpl
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
+import io.mockk.coEvery
 import com.kaleyra.video_sdk.common.avatar.model.ImmutableUri
 import com.kaleyra.video_utils.dispatcher.DispatcherProvider
 import io.mockk.every
@@ -112,6 +114,10 @@ class VirtualBackgroundViewModelTest {
         with(effectsMock) {
             every { preselected } returns MutableStateFlow(Effect.Video.Background.Image(id = "imageId", image = uri))
             every { available } returns MutableStateFlow(setOf(Effect.Video.Background.Blur(id = "blurId", factor = 1f)))
+        }
+        mockkObject(CallExtensions)
+        with(CallExtensions) {
+            coEvery { callMock.isCpuThrottling(any()) } returns MutableStateFlow(false)
         }
     }
 

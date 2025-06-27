@@ -42,6 +42,7 @@ import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
 import com.kaleyra.video_sdk.call.subfeaturelayout.SubFeatureLayout
 import com.kaleyra.video_sdk.call.utils.BluetoothConnectPermission
 import com.kaleyra.video_sdk.call.utils.BluetoothScanPermission
+import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -51,6 +52,7 @@ internal fun AudioOutputComponent(
         factory = AudioOutputViewModel.provideFactory(::requestCollaborationViewModelConfiguration)
     ),
     onDismiss: () -> Unit,
+    displayMutedAudioUi: Boolean = true,
     modifier: Modifier = Modifier,
     isTesting: Boolean = false
 ) {
@@ -71,8 +73,13 @@ internal fun AudioOutputComponent(
         }
     }
 
+    LaunchedEffect(Unit) {
+        if (displayMutedAudioUi) viewModel.muteCallSoundsWhenMuted()
+    }
+
     AudioOutputComponent(
         uiState = uiState,
+        displayMutedAudioUi = displayMutedAudioUi,
         onItemClick = remember(viewModel, onDismiss) {
             {
                 if (it is AudioDeviceUi.Bluetooth && !isConnectionServiceEnabled && !isTesting) {
@@ -92,6 +99,7 @@ internal fun AudioOutputComponent(
     uiState: AudioOutputUiState,
     onItemClick: (AudioDeviceUi) -> Unit,
     onCloseClick: () -> Unit,
+    displayMutedAudioUi: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     SubFeatureLayout(
@@ -100,7 +108,7 @@ internal fun AudioOutputComponent(
         modifier = Modifier.padding(top = 8.dp).then(modifier)
     ) {
         AudioOutputContent(
-            items = uiState.audioDeviceList,
+            items = if (!displayMutedAudioUi) uiState.audioDeviceList else ImmutableList(uiState.audioDeviceList.value.filter { it !is AudioDeviceUi.Muted }),
             playingDeviceId = uiState.playingDeviceId,
             onItemClick = onItemClick
         )

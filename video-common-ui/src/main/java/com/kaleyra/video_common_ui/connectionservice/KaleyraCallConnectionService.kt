@@ -35,6 +35,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 
 @RequiresApi(Build.VERSION_CODES.O)
 class KaleyraCallConnectionService : ConnectionService(), CallForegroundService, CallNotificationProducer.Listener, KaleyraCallConnection.Listener {
@@ -45,17 +47,22 @@ class KaleyraCallConnectionService : ConnectionService(), CallForegroundService,
 
         private var connection: MutableStateFlow<KaleyraCallConnection?> = MutableStateFlow(null)
 
-        suspend fun answer() {
+        private const val CONNECTION_TIMEOUT_MS = 1500L
+
+        suspend fun answer(): Boolean = withTimeoutOrNull(CONNECTION_TIMEOUT_MS) {
             connection.filterNotNull().firstOrNull()?.onAnswer()
-        }
+            true
+        } ?: false
 
-        suspend fun reject() {
+        suspend fun reject(): Boolean = withTimeoutOrNull(CONNECTION_TIMEOUT_MS) {
             connection.filterNotNull().firstOrNull()?.onReject()
-        }
+            true
+        } ?: false
 
-        suspend fun hangUp() {
+        suspend fun hangUp(): Boolean = withTimeoutOrNull(CONNECTION_TIMEOUT_MS) {
             connection.filterNotNull().firstOrNull()?.onDisconnect()
-        }
+            true
+        } ?: false
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)

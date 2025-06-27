@@ -26,6 +26,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.InputCallAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
 import com.kaleyra.video_sdk.call.bottomsheet.view.CallSheetItem
@@ -62,6 +63,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -87,6 +89,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -112,6 +115,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -137,6 +141,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -162,6 +167,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -187,6 +193,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -212,6 +219,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -237,6 +245,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -262,6 +271,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -287,6 +297,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -312,6 +323,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -337,6 +349,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -362,6 +375,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -387,6 +401,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -412,6 +427,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -437,6 +453,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -462,6 +479,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -487,6 +505,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -512,6 +531,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -537,6 +557,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -563,6 +584,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -590,6 +612,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -617,6 +640,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -644,6 +668,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -671,6 +696,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -698,6 +724,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -725,6 +752,7 @@ class CallSheetItemTest {
                 onFileShareClick = { clicked = true },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -752,6 +780,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -778,6 +807,7 @@ class CallSheetItemTest {
                 onChatClick = { },
                 onFileShareClick = { },
                 onWhiteboardClick = { clicked = true },
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { },
                 onSignatureClick = {}
             )
@@ -806,6 +836,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { clicked = true }
             )
         }
@@ -832,6 +863,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -859,6 +891,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -886,6 +919,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -910,6 +944,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -934,6 +969,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -958,6 +994,57 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    @Test
+    fun settingsActionLabelTrue_actionHasLabel() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = SettingsAction(),
+                label = true,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onSignatureClick = {},
+                onSettingsClick = {},
+                onVirtualBackgroundToggle = { }
+            )
+        }
+        composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+
+    @Test
+    fun settingsActionLabelFalse_actionHasNoLabel() {
+        val text = composeTestRule.activity.getString(R.string.kaleyra_call_sheet_audio)
+        composeTestRule.setContent {
+            CallSheetItem(
+                callAction = SettingsAction(),
+                label = false,
+                extended = false,
+                onHangUpClick = { },
+                onMicToggle = { },
+                onCameraToggle = { },
+                onScreenShareToggle = { },
+                onFlipCameraClick = { },
+                onAudioClick = { },
+                onChatClick = { },
+                onFileShareClick = { },
+                onWhiteboardClick = { },
+                onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -982,6 +1069,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1006,6 +1094,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1030,6 +1119,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1054,6 +1144,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1078,6 +1169,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1102,6 +1194,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1126,6 +1219,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1150,6 +1244,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1174,6 +1269,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1198,6 +1294,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1221,6 +1318,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1244,6 +1342,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1267,6 +1366,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1290,6 +1390,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1313,6 +1414,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1336,6 +1438,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1359,6 +1462,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1394,6 +1498,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1428,6 +1533,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1462,6 +1568,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1498,6 +1605,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1533,6 +1641,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1567,6 +1676,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1594,6 +1704,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1621,6 +1732,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1648,6 +1760,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1679,6 +1792,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1707,6 +1821,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1735,6 +1850,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1762,6 +1878,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1791,6 +1908,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1824,6 +1942,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }
@@ -1852,6 +1971,7 @@ class CallSheetItemTest {
                 onFileShareClick = { },
                 onWhiteboardClick = { },
                 onSignatureClick = {},
+                onSettingsClick = {},
                 onVirtualBackgroundToggle = { }
             )
         }

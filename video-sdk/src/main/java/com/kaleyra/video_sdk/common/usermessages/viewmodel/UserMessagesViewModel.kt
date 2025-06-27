@@ -8,6 +8,7 @@ import com.kaleyra.video_sdk.call.viewmodel.BaseViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.snackbar.model.StackedSnackbarHostMessagesHandler
 import com.kaleyra.video_sdk.common.usermessages.model.StackedSnackbarUiState
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.provider.CallUserMessagesProvider
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +39,10 @@ class UserMessagesViewModel(val accessibilityManager: AccessibilityManager?, con
 
                 userMessage
                     .onEach {
-                        stackedSnackbarHostMessagesHandler.addUserMessage(it, true)
+                        stackedSnackbarHostMessagesHandler.addUserMessage(
+                            userMessage = it,
+                            autoDismiss = it !is ThermalWarningMessage
+                        )
                     }
                     .launchIn(this@launch)
 

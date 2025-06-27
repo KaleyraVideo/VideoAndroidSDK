@@ -254,7 +254,7 @@
     <string name="kaleyra_virtual_background_picker_title">Seleziona sfondo virtuale</string>
     <string name="kaleyra_virtual_background_none">Nessuno</string>
     <string name="kaleyra_virtual_background_blur">Sfuocato</string>
-    <string name="kaleyra_virtual_background_image">Immagine</string>
+    <string name="kaleyra_virtual_background_image">Sfondo virtuale</string>
 
     <!-- FILE SHARE -->
     <string name="kaleyra_fileshare">Condividi File</string>

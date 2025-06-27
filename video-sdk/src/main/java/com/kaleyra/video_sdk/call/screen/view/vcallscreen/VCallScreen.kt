@@ -93,6 +93,7 @@ import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.common.usermessages.model.DownloadFileMessage
 import com.kaleyra.video_sdk.common.usermessages.model.PinScreenshareMessage
 import com.kaleyra.video_sdk.common.usermessages.model.SignatureMessage
+import com.kaleyra.video_sdk.common.usermessages.model.ThermalWarningMessage
 import com.kaleyra.video_sdk.common.usermessages.model.UserMessage
 import com.kaleyra.video_sdk.common.usermessages.view.StackedUserMessageComponent
 import com.kaleyra.video_sdk.extensions.DpExtensions.toPixel
@@ -102,6 +103,7 @@ import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastExpandedWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isAtLeastMediumWidth
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isCompactInAnyDimension
 import com.kaleyra.video_sdk.utils.WindowSizeClassUtil.isLargeScreen
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal val PanelTestTag = "PanelTestTag"
@@ -400,7 +402,7 @@ internal fun VCallScreen(
                         }
 
                         is SignatureMessage.New -> {
-                            if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed  }.size == 1) {
+                            if (signDocumentsViewModel.uiState.value.signDocuments.value.fastFilter { it.signState !is SignDocumentUi.SignStateUi.Completed }.size == 1) {
                                 signDocumentsViewModel.signDocument(signDocumentsViewModel.uiState.value.signDocuments.value.first { it.id == message.signId })
                                 onSideBarSheetComponentRequest(ModularComponent.SignDocumentView)
                             } else {

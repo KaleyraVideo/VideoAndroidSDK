@@ -66,7 +66,7 @@ class InputMapperTest {
 
     private val callMock = mockk<Call>()
     
-    private val audioMock = mockk<Input.Audio>()
+    private val audioMock = mockk<Input.Audio.My>()
 
     private val streamMock = mockk<Stream.Mutable>()
 
@@ -263,7 +263,7 @@ class InputMapperTest {
 
     @Test
     fun audioAvailable_toAudioInput_audioInput() = runTest {
-        val audio = mockk<Input.Audio>()
+        val audio = mockk<Input.Audio.My>()
         every { callMock.inputs.availableInputs } returns MutableStateFlow(setOf(audio))
         val result = callMock.toAudioInput()
         val actual = result.first()

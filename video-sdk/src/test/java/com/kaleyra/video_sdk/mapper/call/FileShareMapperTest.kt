@@ -171,7 +171,7 @@ class FileShareMapperTest {
     }
 
     @Test
-    fun uploadCancelled_toSharedFilesUi_uploadRemovedFromFilesSet() = runTest {
+    fun uploadCancelled_toSharedFilesUi_uploadNotInFilesSet() = runTest {
         val state = MutableStateFlow<SharedFile.State>(SharedFile.State.Pending)
         every { sharedFileMock2.state } returns state
         every { sharedFileMock2.sender } returns meMock

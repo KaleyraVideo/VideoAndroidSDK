@@ -11,14 +11,18 @@ import com.kaleyra.video_sdk.call.bottomsheet.view.inputmessage.view.InputMessag
 import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageDragHandleTag
 import com.kaleyra.video_sdk.call.screen.view.vcallscreen.InputMessageHandle
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManagerImpl
 import com.kaleyra.video_sdk.common.usermessages.model.CameraMessage
 import com.kaleyra.video_sdk.common.usermessages.model.FullScreenMessage
 import com.kaleyra.video_sdk.common.usermessages.model.MicMessage
+import com.kaleyra.video_utils.dispatcher.DispatcherProvider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.unmockkAll
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -30,12 +34,26 @@ class InputMessageHandleTest {
 
     private lateinit var callActionsViewModel: CallActionsViewModel
 
+    private val testDispatcher = StandardTestDispatcher()
+
+    private val dispatcherProvider = object : DispatcherProvider {
+        override val default: CoroutineDispatcher = testDispatcher
+        override val io: CoroutineDispatcher = testDispatcher
+        override val main: CoroutineDispatcher = testDispatcher
+        override val mainImmediate: CoroutineDispatcher = testDispatcher
+    }
+
+    private val virtualBackgroundManager = VirtualBackgroundStateManagerImpl.createForTesting(dispatcherProvider)
+
     @Before
     fun setup() {
         callActionsViewModel = spyk(
-            CallActionsViewModel {
-                CollaborationViewModel.Configuration.Success(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true), MutableStateFlow(mockk()))
-            }
+            CallActionsViewModel(
+                configure = {
+                    CollaborationViewModel.Configuration.Success(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true), MutableStateFlow(mockk()))
+                },
+                virtualBackgroundStateManager = virtualBackgroundManager
+            )
         )
     }
 
@@ -160,3 +178,4 @@ class InputMessageHandleTest {
         composeTestRule.onNodeWithTag(InputMessageDragHandleTag).assertIsDisplayed()
     }
 }
+

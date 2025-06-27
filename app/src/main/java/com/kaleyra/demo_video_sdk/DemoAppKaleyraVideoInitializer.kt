@@ -27,6 +27,7 @@ import com.kaleyra.demo_video_sdk.ui.custom_views.CallConfiguration
 import com.kaleyra.demo_video_sdk.ui.custom_views.mapToCallUIButtons
 import com.kaleyra.video.conference.Call
 import com.kaleyra.video.conference.Conference
+import com.kaleyra.video_common_ui.CallUI
 import com.kaleyra.video_common_ui.ConnectionServiceOption
 import com.kaleyra.video_common_ui.KaleyraFontFamily
 import com.kaleyra.video_common_ui.KaleyraVideo
@@ -73,7 +74,6 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 )
             }
 
-
             if (getCallConfiguration().options.backCameraAsDefault)
                 KaleyraVideo.conference.settings.camera = Conference.Settings.Camera.Back
 
@@ -81,7 +81,8 @@ class DemoAppKaleyraVideoInitializer : KaleyraVideoInitializer() {
                 val callConfiguration = getCallConfiguration()
 
                 ongoingCall.buttonsProvider = { callButtons ->
-                    callButtons + getCallConfiguration().actions.mapToCallUIButtons()
+                    (callButtons + getCallConfiguration().actions.mapToCallUIButtons())
+                        .toSortedSet(CallUI.Button.Collections.Comparators.Default)
                 }
 
                 ongoingCall.state

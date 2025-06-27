@@ -30,6 +30,7 @@ import com.kaleyra.video_sdk.call.bottomsheet.model.FlipCameraAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.HangUpAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.MicAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.ScreenShareAction
+import com.kaleyra.video_sdk.call.bottomsheet.model.SettingsAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.SignatureAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.VirtualBackgroundAction
 import com.kaleyra.video_sdk.call.bottomsheet.model.WhiteboardAction
@@ -61,6 +62,7 @@ internal object CallActionsMapper {
                     action is CallUI.Button.FlipCamera -> FlipCameraAction(isEnabled = !isAudioOnly)
                     action is CallUI.Button.HangUp -> HangUpAction()
                     action is CallUI.Button.AudioOutput -> AudioAction()
+                    action is CallUI.Button.Settings -> SettingsAction()
                     action is CallUI.Button.Chat -> ChatAction()
                     action is CallUI.Button.FileShare -> FileShareAction()
                     action is CallUI.Button.ScreenShare && action.onTap is CallUI.Button.ScreenShare.ScreenShareTapAction.AskUser -> ScreenShareAction.UserChoice()

@@ -19,6 +19,7 @@
 package com.kaleyra.video_common_ui.mapper
 
 import com.kaleyra.video.conference.Call
+import com.kaleyra.video.conference.Effect
 import com.kaleyra.video.conference.Input
 import com.kaleyra.video.conference.Stream
 import com.kaleyra.video_common_ui.call.CameraStreamConstants
@@ -128,9 +129,9 @@ object InputMapper {
             .map { inputs -> inputs.any { it is Input.Audio } }
             .distinctUntilChanged()
 
-    fun Call.toAudioInput(): Flow<Input.Audio?> =
+    fun Call.toAudioInput(): Flow<Input.Audio.My?> =
         this.inputs.availableInputs
-            .map { it.filterIsInstance<Input.Audio>().firstOrNull() }
+            .map { it.filterIsInstance<Input.Audio.My>().firstOrNull() }
 
     fun Call.toCameraVideoInput(): Flow<Input.Video.My?> =
         this.inputs.availableInputs
@@ -140,5 +141,13 @@ object InputMapper {
     fun Call.toMyCameraStream(): Flow<Stream.Mutable> =
         this.participants
             .flatMapLatestNotNull { it.me?.streams }
-            .mapNotNull { streams -> streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+            .mapNotNull { streams ->
+                streams.firstOrNull { it.id == CameraStreamConstants.CAMERA_STREAM_ID } }
+
+    fun Call.hasActiveVirtualBackground() =
+        this.toMyCameraStream()
+            .flatMapLatest { it.video }
+            .flatMapLatest { it?.currentEffect ?: flowOf(null) }
+            .map { it != null && it !is Effect.Video.None }
+            .distinctUntilChanged()
 }

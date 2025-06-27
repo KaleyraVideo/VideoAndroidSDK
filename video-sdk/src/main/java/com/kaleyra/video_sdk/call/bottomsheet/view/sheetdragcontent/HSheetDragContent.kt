@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.kaleyra.video.noise_filter.DeepFilterNetModule
 import com.kaleyra.video_common_ui.requestCollaborationViewModelConfiguration
 import com.kaleyra.video_common_ui.utils.extensions.ActivityExtensions.unlockDevice
 import com.kaleyra.video_sdk.call.bottomsheet.model.CallActionUI
@@ -36,6 +37,7 @@ import com.kaleyra.video_sdk.call.callactions.viewmodel.CallActionsViewModel
 import com.kaleyra.video_sdk.call.screen.model.InputPermissions
 import com.kaleyra.video_sdk.call.screen.model.ModularComponent
 import com.kaleyra.video_sdk.call.screenshare.viewmodel.ScreenShareViewModel
+import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_sdk.common.immutablecollections.ImmutableList
 import com.kaleyra.video_sdk.extensions.ContextExtensions.findActivity
 import kotlin.math.max
@@ -99,6 +101,9 @@ internal fun HSheetDragContent(
     var screenShareMode: ScreenShareAction? by remember { mutableStateOf(null) }
     screenShareMode = uiState.actionList.value.firstOrNull { it is ScreenShareAction } as? ScreenShareAction
 
+    val virtualBackgroundViewModel = viewModel<VirtualBackgroundViewModel>(factory = VirtualBackgroundViewModel.provideFactory(::requestCollaborationViewModelConfiguration))
+    val virtualBackgroundUiState = virtualBackgroundViewModel.uiState.collectAsStateWithLifecycle()
+
     HSheetDragContent(
         modifier = modifier,
         callActions = callActions,
@@ -154,6 +159,13 @@ internal fun HSheetDragContent(
         },
         onFlipCameraClick = viewModel::switchCamera,
         onAudioClick = { onModularComponentRequest(ModularComponent.Audio) },
+        onSettingsClick = remember {
+            {
+                val displayFullscreenSettings = DeepFilterNetModule.isAvailable() && virtualBackgroundUiState.value.backgroundList.value.isNotEmpty()
+                if (displayFullscreenSettings) onModularComponentRequest(ModularComponent.Settings)
+                else onModularComponentRequest(ModularComponent.VoiceSettings)
+            }
+        },
         onChatClick = remember(viewModel, isLargeScreen) {
             {
                 if (isLargeScreen) onModularComponentRequest(ModularComponent.Chat)
@@ -186,6 +198,7 @@ internal fun HSheetDragContent(
     onVirtualBackgroundToggle: (Boolean) -> Unit,
     onFlipCameraClick: () -> Unit,
     onAudioClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onChatClick: () -> Unit,
     onFileShareClick: () -> Unit,
     onWhiteboardClick: () -> Unit,
@@ -248,6 +261,7 @@ internal fun HSheetDragContent(
                 onScreenShareToggle = onScreenShareToggle,
                 onFlipCameraClick = onFlipCameraClick,
                 onAudioClick = onAudioClick,
+                onSettingsClick = onSettingsClick,
                 onChatClick = onChatClick,
                 onFileShareClick = onFileShareClick,
                 onWhiteboardClick = onWhiteboardClick,
