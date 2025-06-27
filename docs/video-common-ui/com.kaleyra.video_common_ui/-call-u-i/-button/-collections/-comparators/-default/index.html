@@ -1,0 +1,175 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>Default</title>
+<link href="../../../../../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../../../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../../../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../../../../../styles/style.css" rel="Stylesheet">
+<link href="../../../../../../../styles/main.css" rel="Stylesheet">
+<link href="../../../../../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../../../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../../../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../../../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../../../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../../../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../../../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../../../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../../../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../../../../../index.html">
+                            VideoAndroidSDK
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-common-ui:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="video-common-ui::com.kaleyra.video_common_ui/CallUI.Button.Collections.Comparators.Default///PointingToDeclaration//-943617535">
+  <div class="breadcrumbs"><a href="../../../../../../index.html">video-common-ui</a><span class="delimiter">/</span><a href="../../../../../index.html">com.kaleyra.video_common_ui</a><span class="delimiter">/</span><a href="../../../../index.html">CallUI</a><span class="delimiter">/</span><a href="../../../index.html">Button</a><span class="delimiter">/</span><a href="../../index.html">Collections</a><span class="delimiter">/</span><a href="../index.html">Comparators</a><span class="delimiter">/</span><span class="current">Default</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Default</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">object </span><a href="index.html">Default</a> : <a href="../index.html">CallUI.Button.Collections.Comparators</a>, <a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt; </span></div><p class="paragraph">A default comparator for <a href="../../../index.html">CallUI.Button</a>s.</p><p class="paragraph">This comparator sorts buttons based on a predefined order specified by the <code class="lang-kotlin">all</code> list. Buttons appearing earlier in the <code class="lang-kotlin">all</code> list will be considered "less than" buttons appearing later in the list. If a button is not found in the <code class="lang-kotlin">all</code> list, its behavior in the comparison will be based on <code class="lang-kotlin">indexOf</code> returning -1, potentially leading to it being sorted towards the beginning or end depending on the other button's position.</p><p class="paragraph">It's crucial that the <code class="lang-kotlin">all</code> list contains all relevant <a href="../../../index.html">CallUI.Button</a> instances that are expected to be sorted by this comparator for predictable behavior.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1597446782%2FFunctions%2F-943617535" anchor-label="compare" id="-1597446782%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="compare.html"><span><span>compare</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1597446782%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="compare.html"><span class="token function">compare</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">button1<span class="token operator">: </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter ">button2<span class="token operator">: </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="208665987%2FFunctions%2F-943617535" anchor-label="reversed" id="208665987%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#208665987%2FFunctions%2F-943617535"><span><span>reversed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="208665987%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#208665987%2FFunctions%2F-943617535"><span class="token function">reversed</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-913788900%2FFunctions%2F-943617535" anchor-label="thenComparing" id="-913788900%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#225036626%2FFunctions%2F-943617535"><span>then</span><wbr><span><span>Comparing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-913788900%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#225036626%2FFunctions%2F-943617535"><span class="token function">thenComparing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#-419069869%2FFunctions%2F-943617535">U</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-comparable/index.html">Comparable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#-419069869%2FFunctions%2F-943617535">U</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span><a href="index.html#-419069869%2FFunctions%2F-943617535"><span class="token function">thenComparing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/Function.html">Function</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token punctuation">, </span><span class="token keyword">out </span><a href="index.html#-419069869%2FFunctions%2F-943617535">U</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html#887677275%2FFunctions%2F-943617535">U</a><span class="token operator"> : </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt; </span><a href="index.html#887677275%2FFunctions%2F-943617535"><span class="token function">thenComparing</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/Function.html">Function</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token punctuation">, </span><span class="token keyword">out </span><a href="index.html#887677275%2FFunctions%2F-943617535">U</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="index.html#887677275%2FFunctions%2F-943617535">U</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1664557949%2FFunctions%2F-943617535" anchor-label="thenComparingDouble" id="-1664557949%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1664557949%2FFunctions%2F-943617535"><span>then</span><wbr><span>Comparing</span><wbr><span><span>Double</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1664557949%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1664557949%2FFunctions%2F-943617535"><span class="token function">thenComparingDouble</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/ToDoubleFunction.html">ToDoubleFunction</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2135078055%2FFunctions%2F-943617535" anchor-label="thenComparingInt" id="2135078055%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#2135078055%2FFunctions%2F-943617535"><span>then</span><wbr><span>Comparing</span><wbr><span><span>Int</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2135078055%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#2135078055%2FFunctions%2F-943617535"><span class="token function">thenComparingInt</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/ToIntFunction.html">ToIntFunction</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2005782051%2FFunctions%2F-943617535" anchor-label="thenComparingLong" id="2005782051%2FFunctions%2F-943617535" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-common-ui:dokkaHtmlPartial/release" data-filterable-set=":video-common-ui:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#2005782051%2FFunctions%2F-943617535"><span>then</span><wbr><span>Comparing</span><wbr><span><span>Long</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2005782051%2FFunctions%2F-943617535"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-common-ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#2005782051%2FFunctions%2F-943617535"><span class="token function">thenComparingLong</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/function/ToLongFunction.html">ToLongFunction</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Comparator.html">Comparator</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../../../index.html">CallUI.Button</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

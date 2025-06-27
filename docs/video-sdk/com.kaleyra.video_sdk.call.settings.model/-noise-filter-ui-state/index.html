@@ -1,0 +1,164 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>NoiseFilterUiState</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            VideoAndroidSDK
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":video-sdk:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="video-sdk::com.kaleyra.video_sdk.call.settings.model/NoiseFilterUiState///PointingToDeclaration//2017425725">
+  <div class="breadcrumbs"><a href="../../index.html">video-sdk</a><span class="delimiter">/</span><a href="../index.html">com.kaleyra.video_sdk.call.settings.model</a><span class="delimiter">/</span><span class="current">NoiseFilterUiState</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Noise</span><wbr><span>Filter</span><wbr><span>Ui</span><wbr><span><span>State</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html"><span class="token annotation builtin">Immutable</span></a></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">NoiseFilterUiState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>deepFilerLoadingState<span class="token operator">: </span><span data-unresolved-link="com.kaleyra.video.noise_filter/DeepFilterNetModuleLoader.LoadingState///PointingToDeclaration/">DeepFilterNetModuleLoader.LoadingState</span><span class="token operator"> = </span>DeepFilterNetModuleLoader.LoadingState.Unloaded<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>supportedNoiseFilterModesUi<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf(NoiseFilterModeUi.Standard))<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>currentNoiseFilterModeUi<span class="token operator">: </span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a><span class="token operator"> = </span>NoiseFilterModeUi.Standard<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isDeviceOverHeating<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span> : <a href="../../com.kaleyra.video_sdk.common.uistate/-ui-state/index.html">UiState</a></div><p class="paragraph">Represents the UI state for the noise filtering feature.</p><p class="paragraph">This data class is annotated with <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Immutable.html">Immutable</a> to indicate to the Compose compiler that its properties will not change after the object is constructed. This allows for potential recomposition optimizations.</p><p class="paragraph">It implements <a href="../../com.kaleyra.video_sdk.common.uistate/-ui-state/index.html">UiState</a>, suggesting it's part of a state management pattern (e.g., MVI - Model-View-Intent) where UI states are explicitly defined.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1855726942%2FConstructors%2F2017425725" anchor-label="NoiseFilterUiState" id="1855726942%2FConstructors%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-noise-filter-ui-state.html"><span>Noise</span><wbr><span>Filter</span><wbr><span>Ui</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1855726942%2FConstructors%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">deepFilerLoadingState<span class="token operator">: </span><span data-unresolved-link="com.kaleyra.video.noise_filter/DeepFilterNetModuleLoader.LoadingState///PointingToDeclaration/">DeepFilterNetModuleLoader.LoadingState</span><span class="token operator"> = </span>DeepFilterNetModuleLoader.LoadingState.Unloaded<span class="token punctuation">, </span></span><span class="parameter ">supportedNoiseFilterModesUi<span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a><span class="token operator">&gt;</span><span class="token operator"> = </span>ImmutableList(listOf(NoiseFilterModeUi.Standard))<span class="token punctuation">, </span></span><span class="parameter ">currentNoiseFilterModeUi<span class="token operator">: </span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a><span class="token operator"> = </span>NoiseFilterModeUi.Standard<span class="token punctuation">, </span></span><span class="parameter ">isDeviceOverHeating<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1435420996%2FProperties%2F2017425725" anchor-label="currentNoiseFilterModeUi" id="1435420996%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="current-noise-filter-mode-ui.html"><span>current</span><wbr><span>Noise</span><wbr><span>Filter</span><wbr><span>Mode</span><wbr><span><span>Ui</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1435420996%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="current-noise-filter-mode-ui.html">currentNoiseFilterModeUi</a><span class="token operator">: </span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a></div><div class="brief "><p class="paragraph">The currently selected or active noise filter mode. Represented by an instance of <a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a>. Defaults to <a href="../-noise-filter-mode-ui/-standard/index.html">NoiseFilterModeUi.Standard</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2073489607%2FProperties%2F2017425725" anchor-label="deepFilerLoadingState" id="2073489607%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="deep-filer-loading-state.html"><span>deep</span><wbr><span>Filer</span><wbr><span>Loading</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2073489607%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="deep-filer-loading-state.html">deepFilerLoadingState</a><span class="token operator">: </span><span data-unresolved-link="com.kaleyra.video.noise_filter/DeepFilterNetModuleLoader.LoadingState///PointingToDeclaration/">DeepFilterNetModuleLoader.LoadingState</span></div><div class="brief "><p class="paragraph">The current loading state of the deep filter's neural network model or resources. Represented by <span data-unresolved-link="com.kaleyra.video.noise_filter/DeepFilterNetModuleLoader.LoadingState///PointingToDeclaration/">DeepFilterNetModuleLoader.LoadingState</span>, which could include states like Unloaded, Loading, Loaded, or Error. Defaults to <span data-unresolved-link="com.kaleyra.video.noise_filter/DeepFilterNetModuleLoader.LoadingState.Unloaded///PointingToDeclaration/">DeepFilterNetModuleLoader.LoadingState.Unloaded</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1472395672%2FProperties%2F2017425725" anchor-label="isDeviceOverHeating" id="-1472395672%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-device-over-heating.html"><span>is</span><wbr><span>Device</span><wbr><span>Over</span><wbr><span><span>Heating</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1472395672%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="is-device-over-heating.html">isDeviceOverHeating</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></div><div class="brief "><p class="paragraph">Flag indicating whether the device is currently experiencing overheating. This may be used by the UI to disable or modify the behavior of resource-intensive features like advanced noise filtering. Defaults to <code class="lang-kotlin">false</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1364998214%2FProperties%2F2017425725" anchor-label="supportedNoiseFilterModesUi" id="1364998214%2FProperties%2F2017425725" data-filterable-set=":video-sdk:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":video-sdk:dokkaHtmlPartial/release" data-filterable-set=":video-sdk:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="supported-noise-filter-modes-ui.html"><span>supported</span><wbr><span>Noise</span><wbr><span>Filter</span><wbr><span>Modes</span><wbr><span><span>Ui</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1364998214%2FProperties%2F2017425725"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":video-sdk:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="supported-noise-filter-modes-ui.html">supportedNoiseFilterModesUi</a><span class="token operator">: </span><a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">An immutable list of noise filter modes that are supported by the current device or environment and should be presented to the user. Each item in the list is an instance of <a href="../-noise-filter-mode-ui/index.html">NoiseFilterModeUi</a>. Using <a href="../../com.kaleyra.video_sdk.common.immutablecollections/-immutable-list/index.html">ImmutableList</a> ensures the list cannot be modified post-creation. Defaults to an empty immutable list, indicating no specific modes are listed initially (consider using <code class="lang-kotlin">persistentListOf()</code> for cleaner empty list creation).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

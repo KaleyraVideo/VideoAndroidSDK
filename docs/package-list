@@ -13,6 +13,7 @@ com.kaleyra.video_common_ui.contactdetails
 com.kaleyra.video_common_ui.layout
 com.kaleyra.video_common_ui.mapper
 com.kaleyra.video_common_ui.model
+com.kaleyra.video_common_ui.noise_filter
 com.kaleyra.video_common_ui.notification
 com.kaleyra.video_common_ui.notification.fileshare
 com.kaleyra.video_common_ui.notification.model
@@ -43,6 +44,7 @@ com.kaleyra.video_sdk.call.appbar.model.recording
 com.kaleyra.video_sdk.call.appbar.view
 com.kaleyra.video_sdk.call.appbar.viewmodel
 com.kaleyra.video_sdk.call.audiooutput.model
+com.kaleyra.video_sdk.call.audiooutput.view
 com.kaleyra.video_sdk.call.bottomsheet
 com.kaleyra.video_sdk.call.bottomsheet.model
 com.kaleyra.video_sdk.call.brandlogo.model
@@ -61,12 +63,16 @@ com.kaleyra.video_sdk.call.fileshare.view
 com.kaleyra.video_sdk.call.kicked.model
 com.kaleyra.video_sdk.call.kicked.view
 com.kaleyra.video_sdk.call.kicked.viewmodel
+com.kaleyra.video_sdk.call.mapper
 com.kaleyra.video_sdk.call.pip
 com.kaleyra.video_sdk.call.pip.view
 com.kaleyra.video_sdk.call.pointer.model
 com.kaleyra.video_sdk.call.pointer.view
 com.kaleyra.video_sdk.call.screen.model
 com.kaleyra.video_sdk.call.screenshare.model
+com.kaleyra.video_sdk.call.settings
+com.kaleyra.video_sdk.call.settings.model
+com.kaleyra.video_sdk.call.settings.view
 com.kaleyra.video_sdk.call.signature.model
 com.kaleyra.video_sdk.call.signature.view
 com.kaleyra.video_sdk.call.stream.layoutsystem.config
@@ -76,6 +82,7 @@ com.kaleyra.video_sdk.call.stream.view.items
 com.kaleyra.video_sdk.call.viewmodel
 com.kaleyra.video_sdk.call.virtualbackground.model
 com.kaleyra.video_sdk.call.virtualbackground.state
+com.kaleyra.video_sdk.call.voice_settings.model
 com.kaleyra.video_sdk.call.whiteboard.model
 com.kaleyra.video_sdk.chat.appbar.model
 com.kaleyra.video_sdk.chat.conversation.model
