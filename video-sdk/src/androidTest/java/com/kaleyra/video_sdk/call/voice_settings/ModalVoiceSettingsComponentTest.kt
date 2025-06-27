@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.kaleyra.video_sdk.ui.call.voice_settings
+package com.kaleyra.video_sdk.call.voice_settings
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.Modifier
@@ -26,7 +26,6 @@ import androidx.compose.ui.test.performClick
 import com.kaleyra.video_sdk.R
 import com.kaleyra.video_sdk.call.audiooutput.model.AudioOutputUiState
 import com.kaleyra.video_sdk.call.audiooutput.viewmodel.AudioOutputViewModel
-import com.kaleyra.video_sdk.call.voice_settings.ModalVoiceSettingsComponent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
@@ -36,11 +35,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import kotlin.reflect.KClass
 
-@RunWith(RobolectricTestRunner::class)
 class ModalVoiceSettingsComponentTest {
 
     @get:Rule

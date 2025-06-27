@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -93,7 +92,7 @@ class VirtualBackgroundSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_none)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundNoneOptionTag).performClick()
 
         Assert.assertEquals(VirtualBackgroundUi.None, requestedVirtualBackgroundUi)
     }
@@ -107,7 +106,7 @@ class VirtualBackgroundSettingsComponentTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription(composeTestRule.activity.getString(com.kaleyra.video_sdk.R.string.kaleyra_virtual_background_blur)).performClick()
+        composeTestRule.onNodeWithTag(VirtualBackgroundBlurOptionTag).performClick()
         Assert.assertEquals(VirtualBackgroundUi.Blur("blur"), requestedVirtualBackgroundUi)
     }
 

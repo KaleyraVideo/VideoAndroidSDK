@@ -8,10 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -41,9 +37,13 @@ import com.kaleyra.video_sdk.call.settings.view.VirtualBackgroundSettingsTag
 import com.kaleyra.video_sdk.call.settings.view.VoiceSettingsTag
 import com.kaleyra.video_sdk.call.settings.viewmodel.NoiseFilterViewModel
 import com.kaleyra.video_sdk.call.virtualbackground.model.VirtualBackgroundUi
+import com.kaleyra.video_sdk.call.virtualbackground.state.VirtualBackgroundStateManager
 import com.kaleyra.video_sdk.call.virtualbackground.viewmodel.VirtualBackgroundViewModel
 import com.kaleyra.video_utils.ContextRetainer
+import io.mockk.Runs
+import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.spyk
@@ -91,7 +91,9 @@ class SettingsComponentTest {
                             noiseFilterModeFlow.value = firstArg()
                         }
                     })
-                    every { video } returns MutableStateFlow(mockk(relaxed = true))
+                    every { video } returns MutableStateFlow(mockk(relaxed = true) {
+                        every { currentEffect } returns MutableStateFlow(Effect.Video.None)
+                    })
                 }))
             }
         })
@@ -106,7 +108,10 @@ class SettingsComponentTest {
             )
 
         }
-        virtualBackgroundViewModel = spyk(VirtualBackgroundViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, mockk()))
+        virtualBackgroundViewModel = spyk(VirtualBackgroundViewModel({ Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) }, mockk<VirtualBackgroundStateManager>() {
+            every { setVirtualBackgroundEnabled(any<Boolean>()) } just Runs
+            coEvery { updateActiveCall(any()) } just Runs
+        }))
         noiseFilterViewModel = spyk(NoiseFilterViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) })
         audioOutputViewModel = spyk(AudioOutputViewModel { Configuration.Success(conferenceMock, mockk(), mockk(relaxed = true), MutableStateFlow(mockk())) })
 
