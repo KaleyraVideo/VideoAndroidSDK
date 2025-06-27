@@ -81,16 +81,16 @@ class CallNotificationActionReceiver internal constructor(val dispatcher: Corout
                 KaleyraVideo.onCallReady(this) { call ->
                     when (notificationAction) {
                         ACTION_ANSWER -> {
-                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.answer()
-                            else call.connect()
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled && KaleyraCallConnectionService.answer()) return@onCallReady
+                            call.connect()
                         }
                         ACTION_DECLINE -> {
-                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.reject()
-                            else call.end()
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled && KaleyraCallConnectionService.reject()) return@onCallReady
+                            call.end()
                         }
                         ACTION_HANGUP -> {
-                            if (ConnectionServiceUtils.isConnectionServiceEnabled) KaleyraCallConnectionService.hangUp()
-                            else call.end()
+                            if (ConnectionServiceUtils.isConnectionServiceEnabled && KaleyraCallConnectionService.hangUp()) return@onCallReady
+                            call.end()
                         }
                         // TODO remove duplication with call actions view model
                         ACTION_STOP_SCREEN_SHARE -> {

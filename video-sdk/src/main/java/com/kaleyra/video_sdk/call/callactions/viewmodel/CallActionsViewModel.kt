@@ -352,7 +352,10 @@ internal class CallActionsViewModel(
     }
 
     fun accept() {
-        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch { KaleyraCallConnectionService.answer() }
+        if (ConnectionServiceUtils.isConnectionServiceEnabled) viewModelScope.launch {
+            if (KaleyraCallConnectionService.answer()) return@launch
+            call.getValue()?.connect()
+        }
         else call.getValue()?.connect()
     }
 
@@ -430,8 +433,14 @@ internal class CallActionsViewModel(
     fun hangUp() {
         when {
             !ConnectionServiceUtils.isConnectionServiceEnabled -> call.getValue()?.end()
-            uiState.value.isRinging -> viewModelScope.launch { KaleyraCallConnectionService.reject() }
-            else -> viewModelScope.launch { KaleyraCallConnectionService.hangUp() }
+            uiState.value.isRinging -> viewModelScope.launch {
+                if (KaleyraCallConnectionService.reject()) return@launch
+                call.getValue()?.end()
+            }
+            else -> viewModelScope.launch {
+                if (KaleyraCallConnectionService.hangUp()) return@launch
+                call.getValue()?.end()
+            }
         }
     }
 

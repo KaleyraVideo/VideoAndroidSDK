@@ -13,6 +13,7 @@ object ConnectionServiceUtils {
     val isConnectionServiceSupported: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !DeviceUtils.isSmartGlass
 
+    @get:ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
     val isConnectionServiceEnabled: Boolean
         get() = isConnectionServiceSupported &&
                 ContextRetainer.context.hasConnectionServicePermissions() &&
