@@ -98,5 +98,5 @@ dependencies {
 
     // define this dependency only if you desire to include an advanced ai based noise filtering module
     // for a better in-call experience in noisy environments
-    implementation "com.kaleyra:video-extension-noise-filter"
+    implementation "com.kaleyra:video-extension-noise-filter-lazymodel"
 }
