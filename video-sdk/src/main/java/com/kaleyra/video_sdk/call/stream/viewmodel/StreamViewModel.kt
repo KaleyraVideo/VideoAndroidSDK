@@ -35,6 +35,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -45,6 +46,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,8 +83,8 @@ internal class StreamViewModel(
                 }
                 .launchIn(this)
 
-            call
-                .toStreamsUi()
+            val streamsUi = call.toStreamsUi().stateIn(this, SharingStarted.Eagerly, emptyList())
+            streamsUi
                 .map { streams ->
                     val controllerStreams = streams.filterNot { it.isLocalScreenShare() }
                     _uiState.update { state ->
@@ -143,8 +145,8 @@ internal class StreamViewModel(
                         )
                     }
                 } else {
-                    // wait for at least another participant's stream to be added before setting the preview to null
-                    uiState.first { it.streamItems.value.size > 1 }
+                    // wait for at least another stream to be added before setting the preview to null
+                    streamsUi.first { it.size > 1 }
                     _uiState.update { it.copy(preview = null) }
                 }
             }.launchIn(this)
@@ -192,9 +194,7 @@ internal class StreamViewModel(
     fun switchToPipStreamLayout() {
         viewModelScope.launch {
             val hasFeaturedStreams = layoutController.streamItems.first().any { it.isFeatured() }
-            // If it has any stream in featured state (featured, pinned or fullscreen) return
-            if (hasFeaturedStreams) return@launch
-            isSingleStreamLayout.value = true
+            isSingleStreamLayout.value = !hasFeaturedStreams
         }
     }
 
