@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.settings.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -53,7 +54,9 @@ internal fun NoiseSuppressionSettingsComponent(
             Column {
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.DeepFilterAi)) {
                     SettingsItemComponent(
-                        modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding, bottom = NoiseSuppressionSettingsGroupVerticalPadding / 2),
+                        modifier = Modifier
+                            .height(SettingsItemComponentHeight + NoiseSuppressionSettingsGroupVerticalPadding + NoiseSuppressionSettingsGroupVerticalPadding / 2)
+                            .padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding, bottom = NoiseSuppressionSettingsGroupVerticalPadding / 2),
                         iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_ai),
                         text = stringResource(R.string.kaleyra_strings_action_noise_suppression_deepfilter_ai),
                         testTag = NoiseSuppressionDeepFilterOptionTag,
@@ -69,7 +72,9 @@ internal fun NoiseSuppressionSettingsComponent(
                 }
                 if (noiseFilterUiState.supportedNoiseFilterModesUi.value.contains(NoiseFilterModeUi.Standard)) {
                     SettingsItemComponent(
-                        modifier = Modifier.padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding / 2, bottom = NoiseSuppressionSettingsGroupVerticalPadding),
+                        modifier = Modifier
+                            .height(SettingsItemComponentHeight + NoiseSuppressionSettingsGroupVerticalPadding + NoiseSuppressionSettingsGroupVerticalPadding / 2)
+                            .padding(start = NoiseSuppressionSettingsGroupHorizontalStartPadding, end = NoiseSuppressionSettingsGroupHorizontalEndPadding, top = NoiseSuppressionSettingsGroupVerticalPadding / 2, bottom = NoiseSuppressionSettingsGroupVerticalPadding),
                         iconPainter = painterResource(R.drawable.ic_kaleyra_noise_filter_standard),
                         text = stringResource(R.string.kaleyra_strings_action_noise_suppression_standard),
                         testTag = NoiseSuppressionStandardOptionTag,

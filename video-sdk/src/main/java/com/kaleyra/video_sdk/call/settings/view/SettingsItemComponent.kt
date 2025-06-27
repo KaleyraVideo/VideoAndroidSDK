@@ -1,6 +1,7 @@
 package com.kaleyra.video_sdk.call.settings.view
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,18 +27,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.kaleyra.video_sdk.common.preview.MultiConfigPreview
 import com.kaleyra.video_sdk.extensions.ModifierExtensions.highlightOnFocus
+import com.kaleyra.video_sdk.theme.KaleyraTheme
 
 private const val DisabledOptionAlpha = 0.4f
 private val SettingsItemComponentIconSize = 24.dp
-private val SettingsItemComponentHeight = 48.dp
+val SettingsItemComponentHeight = 48.dp
 private val SettingsItemComponentIconSpacer = 8.dp
 
 @Composable
@@ -58,7 +67,6 @@ fun SettingsItemComponent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .height(SettingsItemComponentHeight)
             .optionalTestTag(testTag)
             .selectable(
                 selected = isSelected,
@@ -95,9 +103,7 @@ fun SettingsItemComponent(
         }
         Spacer(Modifier.size(SettingsItemComponentIconSpacer))
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Center) {
             val bodyLargeStyle = MaterialTheme.typography.bodyLarge
             Text(
@@ -128,8 +134,7 @@ fun SettingsItemComponent(
 
             displayRadioButton -> {
                 RadioButton(
-                    modifier = Modifier
-                        .clearAndSetSemantics {},
+                    modifier = Modifier.clearAndSetSemantics {},
                     selected = isSelected,
                     onClick = {
                         isChecked = true
@@ -143,4 +148,19 @@ fun SettingsItemComponent(
 
 private fun Modifier.optionalTestTag(tag: String?): Modifier {
     return if (tag != null) this.testTag(tag) else this
+}
+
+@MultiConfigPreview
+@Composable
+fun SettingsItemComponentPreview() = KaleyraTheme {
+    Box(Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest)) {
+        SettingsItemComponent(
+            text = "DeepFilter AI",
+            subtitle = "Model loading in progress...",
+            iconPainter = painterResource(com.kaleyra.video_sdk.R.drawable.ic_kaleyra_noise_filter_ai),
+            onCheckedChange = {},
+            isSelected = true,
+            isEnabled = true,
+        )
+    }
 }

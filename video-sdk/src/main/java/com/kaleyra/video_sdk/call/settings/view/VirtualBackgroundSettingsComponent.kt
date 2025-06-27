@@ -2,6 +2,7 @@ package com.kaleyra.video_sdk.call.settings.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -53,7 +54,9 @@ internal fun VirtualBackgroundSettingsComponent(
         ) {
             Column {
                 SettingsItemComponent(
-                    modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding / 2),
+                    modifier = Modifier
+                        .height(SettingsItemComponentHeight + SettingsGroupVerticalPadding + SettingsGroupVerticalPadding / 2)
+                        .padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding, bottom = SettingsGroupVerticalPadding / 2),
                     iconPainter = painterResource(R.drawable.ic_kaleyra_virtual_background_blur),
                     text = stringResource(R.string.kaleyra_virtual_background_blur),
                     testTag = VirtualBackgroundBlurOptionTag,
@@ -66,7 +69,9 @@ internal fun VirtualBackgroundSettingsComponent(
                     highlightFocusShape = RoundedCornerShape(topStart = SettingsGroupRoundCorner, topEnd = SettingsGroupRoundCorner)
                 )
                 SettingsItemComponent(
-                    modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding / 2, bottom = SettingsGroupVerticalPadding / 2),
+                    modifier = Modifier
+                        .height(SettingsItemComponentHeight + SettingsGroupVerticalPadding)
+                        .padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding / 2, bottom = SettingsGroupVerticalPadding / 2),
                     iconPainter = painterResource(R.drawable.ic_kaleyra_virtual_background_image),
                     text = stringResource(R.string.kaleyra_call_sheet_virtual_background),
                     testTag = VirtualBackgroundImageOptionTag,
@@ -78,7 +83,9 @@ internal fun VirtualBackgroundSettingsComponent(
                     }
                 )
                 SettingsItemComponent(
-                    modifier = Modifier.padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding / 2, bottom = SettingsGroupVerticalPadding),
+                    modifier = Modifier
+                        .height(SettingsItemComponentHeight + SettingsGroupVerticalPadding + SettingsGroupVerticalPadding / 2)
+                        .padding(start = SettingsGroupHorizontalStartPadding, end = SettingsGroupHorizontalEndPadding, top = SettingsGroupVerticalPadding / 2, bottom = SettingsGroupVerticalPadding),
                     iconPainter = painterResource(R.drawable.ic_kaleyra_virtual_background_none),
                     text = stringResource(R.string.kaleyra_virtual_background_none),
                     testTag = VirtualBackgroundNoneOptionTag,
