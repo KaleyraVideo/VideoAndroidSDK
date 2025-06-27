@@ -358,7 +358,7 @@ class CallUI(
          * Camera Effects button
          */
         @Deprecated(
-            message = "CameraEffects button has been deprecated since version v.4.9.0 and will be removed in a further release.\n" +
+            message = "CameraEffects button has been deprecated since version v.4.10.0 and will be removed in a further release.\n" +
                 "Camera Effects are now included in settings UI that can be obtained by adding CallUI.Button.Settings.",
             replaceWith = ReplaceWith("CallUi.Button.Settings")
         )
@@ -368,7 +368,7 @@ class CallUI(
          * Audio output button
          */
         @Deprecated(
-            message = "AudioOutput button has been deprecated since version v.4.9.0 and will be removed in a further release.\n" +
+            message = "AudioOutput button has been deprecated since version v.4.10.0 and will be removed in a further release.\n" +
                 "Audio Outputs are now included in settings UI that can be obtained by adding CallUI.Button.Settings.",
             replaceWith = ReplaceWith("CallUi.Button.Settings")
         )
