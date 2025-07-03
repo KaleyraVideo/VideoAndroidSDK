@@ -228,16 +228,13 @@ class CallUI(
                  * appearing later in the list. If a button is not found in the `all` list, its behavior
                  * in the comparison will be based on `indexOf` returning -1, potentially leading to
                  * it being sorted towards the beginning or end depending on the other button's position.
-                 *
-                 * It's crucial that the `all` list contains all relevant [CallUI.Button] instances
-                 * that are expected to be sorted by this comparator for predictable behavior.
                  */
                 data object Default : Comparator<CallUI.Button>, Comparators() {
-                    override fun compare(button1: Button?, button2: Button?): Int = when {
-                        (button1 is CallUI.Button.Custom && button2 is CallUI.Button.Settings) ||
-                            (button1 !is CallUI.Button.Custom && button2 is CallUI.Button.Custom) -> -1
-                        button1 is CallUI.Button.Custom && button2 !is CallUI.Button.Custom -> 1
-                        button1 is CallUI.Button.Custom && button2 is CallUI.Button.Custom -> 0
+                    override fun compare(button1: Button?, button2: Button?) = when {
+                        button1 is Custom && button2 is Settings -> -1
+                        button1 is Settings && button2 is Custom -> 1
+                        button1 is Custom -> 1
+                        button2 is Custom -> -1
                         else -> all.indexOf(button1) - all.indexOf(button2)
                     }
                 }
