@@ -232,8 +232,14 @@ class CallUI(
                  * It's crucial that the `all` list contains all relevant [CallUI.Button] instances
                  * that are expected to be sorted by this comparator for predictable behavior.
                  */
-                data object Default: Comparator<CallUI.Button>, Comparators() {
-                    override fun compare(button1: Button?, button2: Button?) = all.indexOf(button1) - all.indexOf(button2)
+                data object Default : Comparator<CallUI.Button>, Comparators() {
+                    override fun compare(button1: Button?, button2: Button?): Int = when {
+                        (button1 is CallUI.Button.Custom && button2 is CallUI.Button.Settings) ||
+                            (button1 !is CallUI.Button.Custom && button2 is CallUI.Button.Custom) -> -1
+                        button1 is CallUI.Button.Custom && button2 !is CallUI.Button.Custom -> 1
+                        button1 is CallUI.Button.Custom && button2 is CallUI.Button.Custom -> 0
+                        else -> all.indexOf(button1) - all.indexOf(button2)
+                    }
                 }
             }
 
