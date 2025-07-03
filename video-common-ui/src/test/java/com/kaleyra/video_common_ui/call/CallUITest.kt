@@ -36,7 +36,6 @@ import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -170,5 +169,11 @@ class CallUITest {
     fun testCallUIButtonsCollectionsDefaultComparatorSorting() {
         val sortedCallUIButtonsSet = CallUI.Button.all.shuffled().toSet().toSortedSet(CallUI.Button.Collections.Comparators.Default)
         Assert.assertEquals(sortedCallUIButtonsSet, CallUI.Button.all)
+    }
+
+    @Test
+    fun testCallUICustomButtonIsAlwaysSortBeforeCallUISettingsButton() {
+        val sortedCallUIButtonsSet = CallUI.Button.all.plus(CallUI.Button.Custom(CallUI.Button.Custom.Configuration(icon = 0, text = "text", action = {}))).shuffled().toSet().toSortedSet(CallUI.Button.Collections.Comparators.Default)
+        Assert.assertEquals(sortedCallUIButtonsSet.indexOf(CallUI.Button.Settings) -1, sortedCallUIButtonsSet.indexOfLast { it is CallUI.Button.Custom })
     }
 }
