@@ -172,7 +172,7 @@ class CallUITest {
     }
 
     @Test
-    fun testCallUICustomButtonIsAlwaysSortBeforeCallUIButtonSettingsButton() {
+    fun testCallUICustomButtonIsAlwaysSortBeforeCallUISettingsButton() {
         val sortedCallUIButtonsSet = CallUI.Button.all.plus(CallUI.Button.Custom(CallUI.Button.Custom.Configuration(icon = 0, text = "text", action = {}))).shuffled().toSet().toSortedSet(CallUI.Button.Collections.Comparators.Default)
         Assert.assertEquals(sortedCallUIButtonsSet.indexOf(CallUI.Button.Settings) -1, sortedCallUIButtonsSet.indexOfLast { it is CallUI.Button.Custom })
     }
