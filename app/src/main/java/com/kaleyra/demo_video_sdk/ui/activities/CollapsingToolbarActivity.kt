@@ -34,7 +34,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.AppBarLayout.ScrollingViewBehavior
-import com.kaleyra.app_configuration.utils.Api35Utils.applyStatusBarInsetAPI35
+import com.kaleyra.app_configuration.utils.Api35Utils.applyEdgeToEdgeInsetsAPI35
 import com.kaleyra.app_utilities.MultiDexApplication
 import com.kaleyra.app_utilities.activities.BaseActivity
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -85,7 +85,7 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
 
         binding.refreshUsersView.setOnRefreshListener(this)
         binding.appbarToolbar.setExpanded(isPortrait())
-        applyStatusBarInsetAPI35()
+        applyEdgeToEdgeInsetsAPI35()
     }
 
     protected fun setRefreshing(refresh: Boolean) {
@@ -138,7 +138,7 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         binding.appbarToolbar.setExpanded(isPortrait())
-        applyStatusBarInsetAPI35()
+        applyEdgeToEdgeInsetsAPI35()
     }
 
     private fun isPortrait() = resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
