@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:Bandyer/Android-App-Extensions.git
 	branch = master
-	commit = a8cb83a6b11b16c4866a2d96efd4071141144e10
-	parent = 9241088313c8b0bb571b49c88faabbc1fe86fd1e
+	commit = 01b08b04aea47d12baf9eb1490b6efa03af1a95c
+	parent = e5186af79da5202ba1d6089f87dfeac5976e08a6
 	method = merge
 	cmdver = 0.4.6

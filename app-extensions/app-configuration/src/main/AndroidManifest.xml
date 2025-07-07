@@ -44,14 +44,17 @@
         </activity>
         <activity
             android:name=".activities.BrandColorConfigurationActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:exported="false" />
         <activity
             android:name=".activities.QRConfigurationActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:launchMode="singleTask" />
         <activity android:name=".activities.ImageTextEditActivity" />
         <activity
             android:name=".activities.MockUserDetailsSettingsActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:windowSoftInputMode="adjustResize" />
     </application>
 
