@@ -30,11 +30,11 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.AppBarLayout.ScrollingViewBehavior
+import com.kaleyra.app_configuration.utils.Api35Utils.applyStatusBarInsetAPI35
 import com.kaleyra.app_utilities.MultiDexApplication
 import com.kaleyra.app_utilities.activities.BaseActivity
 import com.kaleyra.app_utilities.storage.ConfigurationPrefsManager
@@ -60,7 +60,7 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
 
     private val version: String by lazy {
         val pInfo = packageManager.getPackageInfo(packageName, 0)
-        pInfo.versionName
+        pInfo.versionName!!
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +85,7 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
 
         binding.refreshUsersView.setOnRefreshListener(this)
         binding.appbarToolbar.setExpanded(isPortrait())
+        applyStatusBarInsetAPI35()
     }
 
     protected fun setRefreshing(refresh: Boolean) {
@@ -137,6 +138,7 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         binding.appbarToolbar.setExpanded(isPortrait())
+        applyStatusBarInsetAPI35()
     }
 
     private fun isPortrait() = resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE

@@ -15,11 +15,13 @@
  */
 package com.kaleyra.app_configuration.activities
 
+import android.content.res.Configuration
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.kaleyra.app_configuration.databinding.ActionbarLayoutBinding
+import com.kaleyra.app_configuration.utils.Api35Utils.applyStatusBarInsetAPI35
 
 /**
  *
@@ -33,6 +35,7 @@ abstract class ScrollAwareToolbarActivity(open var withToolbar: Boolean = true) 
 
     override fun setContentView(view: View?) = setContentView(view, null)
     override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
+        applyStatusBarInsetAPI35()
         if (!withToolbar) {
             params?.let { super.setContentView(view, it) } ?: super.setContentView(view)
             return
@@ -44,5 +47,10 @@ abstract class ScrollAwareToolbarActivity(open var withToolbar: Boolean = true) 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applyStatusBarInsetAPI35()
     }
 }
