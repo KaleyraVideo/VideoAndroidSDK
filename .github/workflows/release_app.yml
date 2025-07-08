@@ -6,7 +6,7 @@ on:
       tag:
         description: Define the tag
         type: string
-        required: true
+        required: false
   workflow_call:
     inputs:
       tag:
@@ -40,11 +40,19 @@ jobs:
     needs: determine-runner-integration
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout specific tag
+        if: ${{ inputs.tag != '' }}
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
           ref: ${{ inputs.tag }}
+      - name: Checkout latest commit
+        if: ${{ inputs.tag == '' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: false
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -66,30 +74,33 @@ jobs:
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: echo $ENCODED_STRING | base64 -di > app/keystores/release.keystore
+      - name: Update app version
+        run: ./gradlew autoIncrementVersionCode
+      - name: Increment demo app version code
+        uses: stefanzweifel/git-auto-commit-action@v5
+        if: ${{ inputs.tag == '' }}
+        with:
+          commit_message: "chore: increment demo app version code"
+          file_pattern: app/version.properties
       - name: Build app bundle release (AAB)
         run: ./gradlew :app:bundleRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-      - name: Upload aab
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build_release
           path: |
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/mapping/release/mapping.txt
-            app/build/intermediates/merged_native_libs/release/out/lib
+            app/build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
   upload_playstore:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: [ determine-runner-integration, build_aab]
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-          ref: ${{ inputs.tag }}
-      - name: Download math result for job 1
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: build_release
@@ -102,17 +113,12 @@ jobs:
           releaseFiles: build/outputs/bundle/release/app-release.aab
           track: beta
           mappingFile: build/outputs/mapping/release/mapping.txt
-          debugSymbols: build/intermediates/merged_native_libs/release/out/lib
+          debugSymbols: build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
   upload_huawei:
     runs-on: ${{ needs.determine-runner-integration.outputs.runner }}
     needs: [ determine-runner-integration, build_aab ]
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-          ref: ${{ inputs.tag }}
-      - name: Download math result for job 1
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: build_release
