@@ -14,9 +14,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 
 object Api35Utils {
+
     fun AppCompatActivity.applyEdgeToEdgeInsetsAPI35() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBarSpacing = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout())
+            val systemBarSpacing = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                    WindowInsetsCompat.Type.navigationBars() or
+                    WindowInsetsCompat.Type.displayCutout() or
+                    WindowInsetsCompat.Type.ime()
+            )
 
             view.updatePadding(
                 systemBarSpacing.left,

@@ -48,9 +48,4 @@ abstract class ScrollAwareToolbarActivity(open var withToolbar: Boolean = true) 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        applyEdgeToEdgeInsetsAPI35()
-    }
 }

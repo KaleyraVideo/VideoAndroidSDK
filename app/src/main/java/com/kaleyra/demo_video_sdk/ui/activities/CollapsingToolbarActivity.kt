@@ -138,7 +138,6 @@ abstract class CollapsingToolbarActivity : BaseActivity(), OnRefreshListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         binding.appbarToolbar.setExpanded(isPortrait())
-        applyEdgeToEdgeInsetsAPI35()
     }
 
     private fun isPortrait() = resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
