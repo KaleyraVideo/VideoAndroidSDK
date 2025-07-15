@@ -1,7 +1,6 @@
 dependencies {
 
     /*** Platform ***/
-    // FOR API < 26
     coreLibraryDesugaring sampleAppCatalog.desugar
 
     implementation sampleAppCatalog.kotlinStdLibJdk8
