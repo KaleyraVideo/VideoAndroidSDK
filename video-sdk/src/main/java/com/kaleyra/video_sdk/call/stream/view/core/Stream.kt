@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -146,26 +147,27 @@ internal fun StreamLayout(
         // otherwise the stream view's rendering state would be always StreamView.State.NotRendering,
         // since the view need to be attached in order to start rendering
         if (showStreamView && streamView != null) {
-            AndroidView(
-                factory = {
-                    streamView.value.apply {
-                        val parentView = parent as? ViewGroup
-                        parentView?.removeView(this)
-                        setOnClickListener { onClick?.invoke() }
-                    }
-                },
-                update = { view ->
-                    val newLayoutParams = view.layoutParams
-                    newLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                    newLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                    view.layoutParams = newLayoutParams
-                },
-                modifier = Modifier
-                    .testTag(StreamViewTestTag)
-                    .graphicsLayer { alpha = streamViewAlpha }
-            )
+            key(streamView) {
+                AndroidView(
+                    factory = {
+                        streamView.value.apply {
+                            val parentView = parent as? ViewGroup
+                            parentView?.removeView(this)
+                            setOnClickListener { onClick?.invoke() }
+                        }
+                    },
+                    update = { view ->
+                        val newLayoutParams = view.layoutParams
+                        newLayoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        newLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                        view.layoutParams = newLayoutParams
+                    },
+                    modifier = Modifier
+                        .testTag(StreamViewTestTag)
+                        .graphicsLayer { alpha = streamViewAlpha }
+                )
+            }
         }
-
 
         AnimatedVisibility(
             visible = !showStreamView || streamView == null || forceDisplayAvatar,
